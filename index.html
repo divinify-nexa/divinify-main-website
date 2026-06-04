@@ -65,7 +65,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 48px;
-      height: 68px;
+      height: 76px;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       background: rgba(8,9,9,0.0);
@@ -82,7 +82,7 @@
       text-decoration: none;
     }
     .nav-logo img {
-      height: 28px;
+      height: 46px;
       width: auto;
       display: block;
     }
@@ -245,26 +245,33 @@
     }
     .carousel-track {
       display: flex;
-      gap: 64px;
-      animation: scrollLogos 28s linear infinite;
+      align-items: center;
       width: max-content;
+      animation: scrollLogos 40s linear infinite;
+      will-change: transform;
+      backface-visibility: hidden;
     }
-    .carousel-track:hover { animation-play-state: paused; }
     @keyframes scrollLogos {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+      0%   { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
     }
     .carousel-item {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--dim);
-      white-space: nowrap;
-      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+      margin-right: 72px;   /* spacing per item (not gap) keeps the -50% loop seamless */
     }
-    .carousel-item:hover { color: var(--sub); }
+    .carousel-item img {
+      height: 38px;
+      width: auto;
+      max-width: 200px;
+      object-fit: contain;
+      opacity: 0.5;
+      transition: opacity 0.15s ease;
+    }
+    .carousel-item:hover img { opacity: 1; }
+    /* recolor native-color logos to solid white */
+    .carousel-item img.logo-white { filter: brightness(0) invert(1); }
 
     /* ─── SECTION HELPERS ─── */
     section { padding: 120px 80px; }
@@ -493,14 +500,19 @@
     .founder-card:hover { border-color: var(--accent-glow); }
     .founder-img {
       width: 100%;
-      height: 340px;
+      height: 520px;
       object-fit: cover;
-      object-position: center top;
+      object-position: center 30%;
       display: block;
       filter: grayscale(10%);
       transition: filter 0.4s;
     }
     .founder-card:hover .founder-img { filter: grayscale(0%); }
+    /* Carter: nudge framing up a hair and zoom out slightly to match Merritt's depth */
+    .founder-img--carter {
+      object-position: center 34%;
+      transform: scale(0.95);
+    }
     .founder-info {
       padding: 32px 32px 28px;
     }
@@ -736,7 +748,7 @@
       text-decoration: none;
     }
     .footer-logo img {
-      height: 22px;
+      height: 42px;
       width: auto;
       display: block;
     }
@@ -807,27 +819,35 @@
     <p class="trusted-label">Trusted by</p>
     <div class="carousel-track-wrap">
       <div class="carousel-track" id="carouselTrack">
-        <span class="carousel-item">VPR</span>
-        <span class="carousel-item">FCSG</span>
-        <span class="carousel-item">PUSH Sales</span>
-        <span class="carousel-item">SteelBridge CRE</span>
-        <span class="carousel-item">Capital Development</span>
-        <span class="carousel-item">Transcend Roofing</span>
-        <span class="carousel-item">W1N Sales</span>
-        <span class="carousel-item">Meal Mate</span>
-        <span class="carousel-item">Taillefer Commercial</span>
-        <span class="carousel-item">Elevated Solutions</span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/ATL%20Wine%20Festival%20+logo+(white).webp" alt="ATL Wine Festival"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Bison+logo+(white).webp" alt="Bison"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/CD%20logo%20(new).png" alt="CD" class="logo-white"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Jambos+logo+(white).webp" alt="Jambos"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/KW+logo+(white).webp" alt="KW"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Rennie+Curren+logo+(white).webp" alt="Rennie Curren"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Sole+Play+logo+(white).webp" alt="Sole Play"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Streetwise%20Logo.png" alt="Streetwise" class="logo-white"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Swift+Running+logo+(white).webp" alt="Swift Running"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Taillefer%20Commercial%20Group.png" alt="TCG"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/The+Edge+Agency+logo+(white).webp" alt="The Edge Agency"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Transcend+logo+(white).webp" alt="Transcend"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Twisted+Cycle+logo+(white).webp" alt="Twisted Cycle"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/VPR+logo+(white).webp" alt="VPR"></span>
         <!-- duplicate for seamless loop -->
-        <span class="carousel-item">VPR</span>
-        <span class="carousel-item">FCSG</span>
-        <span class="carousel-item">PUSH Sales</span>
-        <span class="carousel-item">SteelBridge CRE</span>
-        <span class="carousel-item">Capital Development</span>
-        <span class="carousel-item">Transcend Roofing</span>
-        <span class="carousel-item">W1N Sales</span>
-        <span class="carousel-item">Meal Mate</span>
-        <span class="carousel-item">Taillefer Commercial</span>
-        <span class="carousel-item">Elevated Solutions</span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/ATL%20Wine%20Festival%20+logo+(white).webp" alt="ATL Wine Festival"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Bison+logo+(white).webp" alt="Bison"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/CD%20logo%20(new).png" alt="CD" class="logo-white"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Jambos+logo+(white).webp" alt="Jambos"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/KW+logo+(white).webp" alt="KW"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Rennie+Curren+logo+(white).webp" alt="Rennie Curren"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Sole+Play+logo+(white).webp" alt="Sole Play"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Streetwise%20Logo.png" alt="Streetwise" class="logo-white"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Swift+Running+logo+(white).webp" alt="Swift Running"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Taillefer%20Commercial%20Group.png" alt="TCG"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/The+Edge+Agency+logo+(white).webp" alt="The Edge Agency"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Transcend+logo+(white).webp" alt="Transcend"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/Twisted+Cycle+logo+(white).webp" alt="Twisted Cycle"></span>
+        <span class="carousel-item"><img src="./Assets/partner%20logos/VPR+logo+(white).webp" alt="VPR"></span>
       </div>
     </div>
   </div>
@@ -966,7 +986,7 @@
     </div>
     <div class="founders-grid">
       <div class="founder-card reveal reveal-d1">
-        <img src="./Assets/DSC05938-2.jpg" alt="Carter Mason" class="founder-img">
+        <img src="./Assets/DSC05938-2.jpg" alt="Carter Mason" class="founder-img founder-img--carter">
         <div class="founder-info">
           <div class="founder-name">Carter Mason</div>
           <div class="founder-title">Co-Founder, Operations &amp; Client Experience</div>
@@ -1172,25 +1192,36 @@
       }
 
       const nodes = fibSphere(N, R);
-      let angle = 0;
-
-      function rotateY(x, z, a) {
-        return {
-          x: x * Math.cos(a) - z * Math.sin(a),
-          z: x * Math.sin(a) + z * Math.cos(a)
-        };
-      }
 
       function draw(ts) {
         ctx.clearRect(0, 0, W, H);
-        angle += 0.0022;
+
+        // Time-driven multi-axis rotation: a slow horizontal spin whose speed
+        // gently drifts, plus a wandering tilt and roll for a smooth twist/turn.
+        const t  = (ts || 0) * 0.001;                 // seconds
+        const ay = t * 0.12 + 0.40 * Math.sin(t * 0.20);  // spin (Y) + speed drift
+        const ax = 0.55 * Math.sin(t * 0.17);             // tilt (X)
+        const az = 0.22 * Math.sin(t * 0.13);             // roll (Z)
+        const cx = Math.cos(ax), sxr = Math.sin(ax);
+        const cy = Math.cos(ay), syr = Math.sin(ay);
+        const cz = Math.cos(az), szr = Math.sin(az);
 
         // Project nodes
         const projected = nodes.map((n, i) => {
-          const r   = rotateY(n.ox, n.oz, angle);
-          const sx  = CX + r.x;
-          const sy  = CY + n.oy;
-          const sz  = r.z;
+          let x = n.ox, y = n.oy, z = n.oz;
+          // rotate X (tilt)
+          let ny = y * cx - z * sxr, nz = y * sxr + z * cx;
+          y = ny; z = nz;
+          // rotate Y (spin)
+          let nx = x * cy - z * syr; nz = x * syr + z * cy;
+          x = nx; z = nz;
+          // rotate Z (roll)
+          nx = x * cz - y * szr; ny = x * szr + y * cz;
+          x = nx; y = ny;
+
+          const sx  = CX + x;
+          const sy  = CY + y;
+          const sz  = z;
           // depth fade 0..1 (1 = front)
           const depth = (sz + R) / (2 * R);
           // pulse
