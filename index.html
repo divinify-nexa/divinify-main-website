@@ -77,14 +77,15 @@
       border-color: var(--border);
     }
     .nav-logo {
-      font-family: 'DM Mono', monospace;
-      font-weight: 400;
-      font-size: 15px;
-      letter-spacing: 0.12em;
-      color: var(--text);
+      display: flex;
+      align-items: center;
       text-decoration: none;
     }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo img {
+      height: 28px;
+      width: auto;
+      display: block;
+    }
     .nav-links {
       display: flex;
       gap: 36px;
@@ -730,14 +731,15 @@
       justify-content: space-between;
     }
     .footer-logo {
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.1em;
-      color: var(--sub);
+      display: flex;
+      align-items: center;
       text-decoration: none;
     }
-    .footer-logo span { color: var(--accent); }
+    .footer-logo img {
+      height: 22px;
+      width: auto;
+      display: block;
+    }
     .footer-copy {
       font-family: 'DM Mono', monospace;
       font-size: 10px;
@@ -767,7 +769,7 @@
 
   <!-- ─── NAV ─── -->
   <nav id="mainNav">
-    <a href="#" class="nav-logo">DIVINIFY<span>.</span></a>
+    <a href="#" class="nav-logo"><img src="./Assets/Divinify_Primary - White Resized (no productions).png" alt="Divinify"></a>
     <ul class="nav-links">
       <li><a href="#services">Services</a></li>
       <li><a href="#why">Why Us</a></li>
@@ -964,7 +966,7 @@
     </div>
     <div class="founders-grid">
       <div class="founder-card reveal reveal-d1">
-        <img src="./carter.jpg" alt="Carter Mason" class="founder-img">
+        <img src="./Assets/DSC05938-2.jpg" alt="Carter Mason" class="founder-img">
         <div class="founder-info">
           <div class="founder-name">Carter Mason</div>
           <div class="founder-title">Co-Founder, Operations &amp; Client Experience</div>
@@ -978,7 +980,7 @@
         </div>
       </div>
       <div class="founder-card reveal reveal-d2">
-        <img src="./merritt.jpg" alt="Merritt Mason" class="founder-img">
+        <img src="./Assets/DSC05928.JPG" alt="Merritt Mason" class="founder-img">
         <div class="founder-info">
           <div class="founder-name">Merritt Mason</div>
           <div class="founder-title">Co-Founder, Technology &amp; Systems Architecture</div>
@@ -1096,7 +1098,7 @@
 
   <!-- ─── FOOTER ─── -->
   <footer>
-    <a href="#" class="footer-logo">DIVINIFY<span>.</span></a>
+    <a href="#" class="footer-logo"><img src="./Assets/Divinify_Primary - White Resized (no productions).png" alt="Divinify"></a>
     <span class="footer-copy">© 2025 Divinify Productions LLC. All rights reserved.</span>
     <ul class="footer-links">
       <li><a href="#services">Services</a></li>
