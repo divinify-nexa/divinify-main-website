@@ -174,6 +174,7 @@
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 28px;
+      margin-left: 2px;        /* optical nudge to align with the headline's left edge */
       display: inline-block;
     }
     .hero-h1 {
@@ -256,6 +257,27 @@
       touch-action: none;
     }
     #meshCanvas.grabbing { cursor: grabbing; }
+    /* subtle diagonal light streak for depth behind the hero */
+    #hero::after {
+      content: '';
+      position: absolute;
+      left: -30%;
+      width: 160%;
+      bottom: 16%;
+      height: 42px;
+      background: linear-gradient(90deg, transparent 12%, rgba(232,150,10,0.11) 50%, transparent 88%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(16px);
+      animation: heroStreak2 21s ease-in-out infinite alternate;
+    }
+    @keyframes heroStreak2 {
+      from { transform: translateY(20px) rotate(-13deg); opacity: 0.5; }
+      to   { transform: translateY(-18px) rotate(-18deg); opacity: 0.9; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #hero::after { animation: none; }
+    }
 
     /* ─── TRUSTED BY ─── */
     #trusted {
@@ -532,11 +554,14 @@
       overflow: hidden;
       background: var(--bg-lift);
       transition: border-color 0.3s;
+      display: flex;
+      flex-direction: column;
     }
     .founder-card:hover { border-color: var(--accent-glow); }
     .founder-img {
       width: 100%;
       height: 520px;
+      flex-shrink: 0;
       object-fit: cover;
       object-position: center 30%;
       display: block;
@@ -551,6 +576,9 @@
     }
     .founder-info {
       padding: 32px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
     .founder-name {
       font-size: 22px;
@@ -575,20 +603,23 @@
     }
     .founder-tags {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-wrap: nowrap;
+      gap: 6px;
+      margin-top: auto;   /* pin tags to the bottom so both cards align */
     }
     .founder-tag {
       font-family: 'DM Mono', monospace;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 300;
-      letter-spacing: 0.13em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--sub);
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
-      padding: 5px 10px;
+      padding: 5px 8px;
       border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     /* ─── TESTIMONIALS ─── */
@@ -847,13 +878,17 @@
     /* ─── FOOTER ─── */
     footer {
       border-top: 1px solid var(--border);
-      padding: 32px 80px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 64px 80px 32px;
+      background: var(--bg);
+    }
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
     }
     .footer-logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       text-decoration: none;
     }
@@ -861,6 +896,72 @@
       height: 42px;
       width: auto;
       display: block;
+      margin-left: -25px;   /* cancel the logo's built-in left padding to align flush */
+    }
+    .footer-tagline {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.65;
+      margin-top: 18px;
+      max-width: 260px;
+    }
+    .footer-location {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .footer-location svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .footer-heading {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 18px;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 13px;
+      color: var(--sub);
+      text-decoration: none;
+      margin-bottom: 11px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--text); }
+    .footer-contact {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+    .footer-socials { display: flex; gap: 12px; }
+    .footer-socials a {
+      width: 38px;
+      height: 38px;
+      margin: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sub);
+      transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    }
+    .footer-socials a:hover {
+      color: var(--accent);
+      border-color: var(--accent-glow);
+      transform: translateY(-2px);
+    }
+    .footer-socials svg { width: 18px; height: 18px; }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
     }
     .footer-copy {
       font-family: 'DM Mono', monospace;
@@ -869,22 +970,6 @@
       letter-spacing: 0.14em;
       color: var(--dim);
     }
-    .footer-links {
-      display: flex;
-      gap: 28px;
-      list-style: none;
-    }
-    .footer-links a {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      font-weight: 300;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--dim);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--sub); }
 
     /* ─── RESPONSIVE / MOBILE ─── */
     @media (max-width: 880px) {
@@ -969,9 +1054,13 @@
       /* Contact */
       .contact-grid { grid-template-columns: 1fr; gap: 48px; }
 
+      /* Founder tags wrap on narrow screens */
+      .founder-tags { flex-wrap: wrap; }
+
       /* Footer */
-      footer { flex-direction: column; gap: 22px; text-align: center; padding: 36px 24px; }
-      .footer-links { flex-wrap: wrap; justify-content: center; gap: 18px; }
+      footer { padding: 56px 24px 28px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 36px 24px; margin-bottom: 36px; }
+      .footer-brand { grid-column: 1 / -1; }
     }
 
     @media (max-width: 520px) {
@@ -1404,13 +1493,41 @@
 
   <!-- ─── FOOTER ─── -->
   <footer>
-    <a href="#" class="footer-logo"><img src="./Assets/divinify-logo-white.png" alt="Divinify"></a>
-    <span class="footer-copy">© 2025 Divinify Productions LLC. All rights reserved.</span>
-    <ul class="footer-links">
-      <li><a href="#services">Services</a></li>
-      <li><a href="#why">About</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="#" class="footer-logo"><img src="./Assets/divinify-logo-white.png" alt="Divinify"></a>
+        <p class="footer-tagline">Custom software, backend AI automation, and video production — built in-house.</p>
+        <p class="footer-location">Atlanta, Georgia</p>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-heading">Contact</h4>
+        <a href="mailto:info@divinify.io" class="footer-contact">info@divinify.io</a>
+        <a href="tel:+14707064715" class="footer-contact">470-706-4715</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-heading">Explore</h4>
+        <a href="#services">Services</a>
+        <a href="#why">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-heading">Follow</h4>
+        <div class="footer-socials">
+          <a href="https://www.instagram.com/divinify.io" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="https://www.tiktok.com/@divinify.io" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82a4.28 4.28 0 0 1-1.06-2.82h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.27 0 .53.04.78.12v-3.2a5.85 5.85 0 0 0-.78-.05A5.8 5.8 0 1 0 15.64 15.4V9.01a7.3 7.3 0 0 0 4.36 1.43V7.3a4.28 4.28 0 0 1-3.4-1.48z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/divinify.io" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Divinify Productions LLC. All rights reserved.</span>
+    </div>
   </footer>
 
   <script>
