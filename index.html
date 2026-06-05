@@ -226,7 +226,10 @@
     #meshCanvas {
       position: relative;
       z-index: 1;
+      cursor: grab;
+      touch-action: none;
     }
+    #meshCanvas.grabbing { cursor: grabbing; }
 
     /* ─── TRUSTED BY ─── */
     #trusted {
@@ -568,21 +571,84 @@
       padding: 120px 80px;
     }
     .testimonials-header { margin-bottom: 56px; }
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    .testimonials-scroller {
+      display: flex;
+      align-items: flex-start;
       gap: 20px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 28px 4px 24px;   /* top/bottom room so hover-lift isn't clipped */
+      scroll-snap-type: x proximity;
+      cursor: grab;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-mid) transparent;
     }
+    .testimonials-scroller.dragging { cursor: grabbing; scroll-snap-type: none; }
+    .testimonials-scroller::-webkit-scrollbar { height: 8px; }
+    .testimonials-scroller::-webkit-scrollbar-track { background: transparent; }
+    .testimonials-scroller::-webkit-scrollbar-thumb {
+      background: var(--border-mid);
+      border-radius: 4px;
+    }
+    .testimonials-scroller::-webkit-scrollbar-thumb:hover { background: var(--border-hi); }
     .testi-card {
+      flex: 0 0 calc((100% - 40px) / 3);
+      min-width: 300px;
+      height: 420px;                 /* fixed → all cards identical */
+      scroll-snap-align: start;
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 36px 32px;
       background: var(--bg);
       display: flex;
       flex-direction: column;
-      transition: border-color 0.25s;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     }
-    .testi-card:hover { border-color: var(--border-mid); }
+    .testi-card:hover {
+      border-color: var(--accent-glow);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 0 1px var(--accent-glow);
+      background: var(--bg-lift2);
+    }
+    .testi-card.expanded { height: auto; }
+    /* horizontal-scroll affordance */
+    .testimonials-wrap { position: relative; }
+    .testimonials-wrap::after {
+      content: '';
+      position: absolute;
+      top: 28px; right: 0; bottom: 24px;
+      width: 90px;
+      background: linear-gradient(to right, rgba(15,16,16,0), var(--bg-lift));
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    .testimonials-wrap.at-end::after { opacity: 0; }
+    .scroll-hint {
+      position: absolute;
+      right: 6px;
+      top: calc(50% - 9px);
+      transform: translateY(-50%);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 20px;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      animation: hintNudge 1.6s ease-in-out infinite;
+    }
+    .testimonials-wrap.at-end .scroll-hint { opacity: 0; }
+    @keyframes hintNudge {
+      0%, 100% { transform: translate(0, -50%); }
+      50%      { transform: translate(5px, -50%); }
+    }
     .stars {
       display: flex;
       gap: 4px;
@@ -597,27 +663,38 @@
       font-style: italic;
       color: var(--sub);
       line-height: 1.75;
-      flex: 1;
-      margin-bottom: 28px;
+      margin-bottom: 14px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 8;
+      overflow: hidden;
     }
+    .testi-card.expanded .testi-quote {
+      -webkit-line-clamp: unset;
+      display: block;
+      overflow: visible;
+    }
+    .read-more {
+      align-self: flex-start;
+      background: none;
+      border: none;
+      padding: 8px 12px;                  /* larger, more forgiving hit area */
+      margin: -8px -12px 16px -12px;      /* offset padding so layout is unchanged */
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .read-more:hover { opacity: 0.75; }
     .testi-author {
       display: flex;
       align-items: center;
       gap: 14px;
-    }
-    .testi-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--accent-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--accent);
-      flex-shrink: 0;
+      margin-top: auto;
     }
     .testi-name {
       font-size: 13px;
@@ -1025,46 +1102,120 @@
       <span class="section-tag">Social proof</span>
       <h2 class="section-h2">What clients actually say.</h2>
     </div>
-    <div class="testimonials-grid">
-      <div class="testi-card reveal reveal-d1">
+    <div class="testimonials-wrap">
+    <div class="testimonials-scroller" id="testiScroller">
+      <div class="testi-card">
         <div class="stars">
           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
-        <p class="testi-quote">"Divinify didn't just build us a portal — they built us an entire recruitment infrastructure. The telemetry, the automation, the video integration. It just works."</p>
+        <p class="testi-quote">I’ve been working closely with Divinify for several months developing a custom made CRM for our business and team. They thoroughly learned our company’s business type, needs and goals and executed an amazing system that has increasingly improved our operations and production. We receive incredible customer service and an excellent product made just for us. I’d highly recommend partnering up with Divinify to improve and grow your business.</p>
         <div class="testi-author">
-          <div class="testi-avatar">FC</div>
           <div>
-            <div class="testi-name">First Coast Sales Group</div>
-            <div class="testi-meta">D2D Sales · Recruiter Portal</div>
+            <div class="testi-name">Taillefer Commercial Group</div>
           </div>
         </div>
       </div>
-      <div class="testi-card reveal reveal-d2">
+      <div class="testi-card">
         <div class="stars">
           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
-        <p class="testi-quote">"The voice agent they built handles calls in a way I didn't think was possible. It's not gimmicky — it actually converts. These guys know exactly what they're doing."</p>
+        <p class="testi-quote">Divinfy is an amazing team to work with. They’re extremely responsive, helpful, and truly dedicated to helping build and grow your brand. Their knowledge and expertise stand out, and they consistently provide valuable feedback while maintaining great communication with their clients. I would 100% recommend them to anyone looking to elevate their brand</p>
         <div class="testi-author">
-          <div class="testi-avatar">SB</div>
           <div>
-            <div class="testi-name">Sammy Berman</div>
-            <div class="testi-meta">SteelBridge CRE · AI Voice Agent</div>
+            <div class="testi-name">PUSH Sales</div>
           </div>
         </div>
       </div>
-      <div class="testi-card reveal reveal-d3">
+      <div class="testi-card">
         <div class="stars">
           <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
         </div>
-        <p class="testi-quote">"They think like a business partner, not a vendor. Every decision was tied back to impact. The email infrastructure they built completely changed our recruiting numbers."</p>
+        <p class="testi-quote">My agency has worked with Divinify for a year now and they've been awesome to work with! We trust them with our clients and they’re great at capturing video as well as taking content and turning it into something usable. We highly recommend them!</p>
         <div class="testi-author">
-          <div class="testi-avatar">VP</div>
           <div>
-            <div class="testi-name">Virtual Properties Realty</div>
-            <div class="testi-meta">Real Estate · Email &amp; Lead Automation</div>
+            <div class="testi-name">The Edge Agency</div>
           </div>
         </div>
       </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">We use Divinify Productions for all of our content and marketing. The quality is outstanding and meets every expectation.</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">Capital Development</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">CARTER AND MERRITT ARE AMAZING, They have completely changed my business. If you arent using Divinify youre missing out!!!</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">W1N Sales</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">We had a great experience working with Divinify team for our recent brand video. From concept to execution, the team was professional, creative, and incredibly easy to collaborate with. They understood our vision and brought it to life with stunning visuals and thoughtful storytelling.</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">Swift Running</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">We love working with Divinify! Not only do they do excellent work—They also care about our organization! They have a great attention to detail and they represent our brand so well every</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">Jambos Donates</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">Working with Divinify was one of the best decisions I ever made. They created a video for me years ago that literally still gets talked about today. Their ability to capture a message and create something timeless is unmatched.</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">Darius Stevens</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">Divinify Productions is hands-down one of the best videography companies I’ve ever worked with. From start to finish, the experience was seamless, professional, and full of good energy. The team has an incredible eye for detail and a true gift for capturing moments in a way that feels authentic, cinematic, and emotionally powerful.<br><br>They don’t just shoot video they tell stories. The quality, creativity, and intention behind their work really sets them apart. You can tell they genuinely care about their clients and the vision being brought to life.<br><br>If you’re looking for a videography company that delivers excellence, creativity, and great vibes all around, Divinify Productions is it. Highly, highly recommend</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">Marie Riedel</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-quote">Carter and Merritt traveled to FL to film a promotional video for me, turnaround time was excellent and their work is top notch! Very professional to work with and the end product is everything I was looking for!</p>
+        <div class="testi-author">
+          <div>
+            <div class="testi-name">Melissa Nettesheim</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">→</div>
     </div>
   </section>
 
@@ -1085,11 +1236,11 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">First Name</label>
-              <input type="text" class="form-input" placeholder="Carter" required>
+              <input type="text" class="form-input" placeholder="John" required>
             </div>
             <div class="form-group">
               <label class="form-label">Last Name</label>
-              <input type="text" class="form-input" placeholder="Mason" required>
+              <input type="text" class="form-input" placeholder="Smith" required>
             </div>
           </div>
           <div class="form-group">
@@ -1196,15 +1347,52 @@
 
       const nodes = fibSphere(N, R);
 
+      // ── Click-drag to rotate, with momentum on release ──
+      let userRX = 0, userRY = 0;     // accumulated drag rotation
+      let velX = 0, velY = 0;         // momentum (decays after release)
+      let dragging = false, lastPX = 0, lastPY = 0;
+      let autoT = 0, prevTs = null;   // auto-tumble clock — pauses while dragging
+      const SENS = 0.009;
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true; velX = 0; velY = 0;
+        lastPX = e.clientX; lastPY = e.clientY;
+        canvas.classList.add('grabbing');
+        canvas.setPointerCapture(e.pointerId);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - lastPX, dy = e.clientY - lastPY;
+        lastPX = e.clientX; lastPY = e.clientY;
+        userRY += dx * SENS;          // horizontal drag → spin
+        userRX -= dy * SENS;          // vertical drag → tilt
+        velY = dx * SENS; velX = -dy * SENS;
+      });
+      const endDrag = (e) => {
+        if (!dragging) return;
+        dragging = false;
+        canvas.classList.remove('grabbing');
+        try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+      };
+      canvas.addEventListener('pointerup', endDrag);
+      canvas.addEventListener('pointercancel', endDrag);
+
       function draw(ts) {
         ctx.clearRect(0, 0, W, H);
 
-        // Time-driven multi-axis rotation: a slow horizontal spin whose speed
-        // gently drifts, plus a wandering tilt and roll for a smooth twist/turn.
-        const t  = (ts || 0) * 0.001;                 // seconds
-        const ay = t * 0.12 + 0.40 * Math.sin(t * 0.20);  // spin (Y) + speed drift
-        const ax = 0.55 * Math.sin(t * 0.17);             // tilt (X)
-        const az = 0.22 * Math.sin(t * 0.13);             // roll (Z)
+        // Advance the auto-tumble clock only when not dragging; apply/decay momentum.
+        if (prevTs !== null && !dragging) autoT += ts - prevTs;
+        prevTs = ts;
+        if (!dragging) {
+          userRY += velY; userRX += velX;
+          velY *= 0.94; velX *= 0.94;
+        }
+
+        // Auto multi-axis tumble (slow spin + wandering tilt/roll) + user drag offsets.
+        const t  = autoT * 0.001;                          // seconds
+        const ay = t * 0.12 + 0.40 * Math.sin(t * 0.20) + userRY;  // spin (Y)
+        const ax = 0.55 * Math.sin(t * 0.17) + userRX;            // tilt (X)
+        const az = 0.22 * Math.sin(t * 0.13);                     // roll (Z)
         const cx = Math.cos(ax), sxr = Math.sin(ax);
         const cy = Math.cos(ay), syr = Math.sin(ay);
         const cz = Math.cos(az), szr = Math.sin(az);
@@ -1281,6 +1469,72 @@
       }
 
       requestAnimationFrame(draw);
+    })();
+
+    // ─── TESTIMONIALS: read-more + drag/wheel horizontal scroll ───
+    (function() {
+      const scroller = document.getElementById('testiScroller');
+      if (!scroller) return;
+
+      // Add a "Read more" toggle to any card whose quote is clamped/overflowing.
+      function setupReadMore() {
+        scroller.querySelectorAll('.testi-card').forEach(card => {
+          if (card.querySelector('.read-more')) return;            // already set up
+          const quote = card.querySelector('.testi-quote');
+          if (quote.scrollHeight - quote.clientHeight <= 4) return; // not clamped
+          const btn = document.createElement('button');
+          btn.className = 'read-more';
+          btn.textContent = 'Read more';
+          // Keep button taps from starting a drag / being swallowed by the scroller.
+          btn.addEventListener('pointerdown', (e) => e.stopPropagation());
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = card.classList.toggle('expanded');
+            btn.textContent = open ? 'Read less' : 'Read more';
+          });
+          quote.insertAdjacentElement('afterend', btn);
+        });
+      }
+      requestAnimationFrame(setupReadMore);
+      window.addEventListener('load', setupReadMore);   // re-check after fonts load
+
+      // Show/hide the "more reviews" cue based on scroll position.
+      const wrap = scroller.closest('.testimonials-wrap');
+      const updateHint = () => {
+        if (!wrap) return;
+        const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 8;
+        wrap.classList.toggle('at-end', atEnd);
+      };
+      scroller.addEventListener('scroll', updateHint, { passive: true });
+      window.addEventListener('resize', updateHint);
+      requestAnimationFrame(updateHint);
+
+      // Click-drag to scroll horizontally.
+      let down = false, startX = 0, startScroll = 0, moved = false;
+      scroller.addEventListener('pointerdown', (e) => {
+        down = true; moved = false;
+        startX = e.clientX; startScroll = scroller.scrollLeft;
+        scroller.classList.add('dragging');
+        scroller.setPointerCapture(e.pointerId);
+      });
+      scroller.addEventListener('pointermove', (e) => {
+        if (!down) return;
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > 3) moved = true;
+        scroller.scrollLeft = startScroll - dx;
+      });
+      const up = (e) => {
+        if (!down) return;
+        down = false;
+        scroller.classList.remove('dragging');
+        try { scroller.releasePointerCapture(e.pointerId); } catch (_) {}
+      };
+      scroller.addEventListener('pointerup', up);
+      scroller.addEventListener('pointercancel', up);
+      // Suppress click (e.g. on Read more) if the pointer was actually dragging.
+      scroller.addEventListener('click', (e) => {
+        if (moved) { e.preventDefault(); e.stopPropagation(); }
+      }, true);
     })();
   </script>
 </body>
