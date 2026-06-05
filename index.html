@@ -121,6 +121,32 @@
       transition: opacity 0.2s, transform 0.2s;
     }
     .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    /* nav-menu is transparent on desktop (children flow as before); becomes a dropdown on mobile */
+    .nav-menu { display: contents; }
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 101;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    #mainNav.open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #mainNav.open .nav-toggle span:nth-child(2) { opacity: 0; }
+    #mainNav.open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     /* ─── HERO ─── */
     #hero {
@@ -859,6 +885,107 @@
       transition: color 0.2s;
     }
     .footer-links a:hover { color: var(--sub); }
+
+    /* ─── RESPONSIVE / MOBILE ─── */
+    @media (max-width: 880px) {
+      section { padding: 80px 24px; }
+      #why, #founders, #testimonials, #contact { padding: 80px 24px; }
+      #stats { padding: 56px 24px; }
+      #midcta { padding: 96px 24px; }
+
+      /* Nav → hamburger dropdown */
+      nav { padding: 0 20px; }
+      .nav-toggle { display: flex; }
+      .nav-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        position: fixed;
+        top: 76px;
+        left: 0;
+        right: 0;
+        background: rgba(8,9,9,0.97);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px 24px;
+        transform: translateY(-12px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      #mainNav.open .nav-menu {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+      .nav-links {
+        position: static;
+        transform: none;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        width: 100%;
+      }
+      .nav-links a { display: block; padding: 13px 0; font-size: 13px; }
+      .nav-cta { margin-top: 14px; }
+
+      /* Hero stacks */
+      #hero {
+        grid-template-columns: 1fr;
+        padding: 116px 24px 64px;
+        gap: 36px;
+        min-height: 0;
+      }
+      .hero-copy { max-width: none; margin-left: 0; padding-right: 0; }
+      .hero-sub { max-width: none; }
+      .hero-visual { height: auto; }
+      #meshCanvas { max-width: 78vw; height: auto; touch-action: pan-y; }
+      .hero-glow { width: 64vw; height: 64vw; }
+
+      /* Services */
+      #services .services-header { grid-template-columns: 1fr; gap: 18px; margin-bottom: 40px; }
+      .services-desc { max-width: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .service-card { border-right: none; border-bottom: 1px solid var(--border); }
+      .service-card:last-child { border-bottom: none; }
+
+      /* Why */
+      .why-grid { grid-template-columns: 1fr; gap: 40px; }
+      .why-left { position: static; top: auto; }
+      .why-desc { max-width: none; }
+
+      /* Stats */
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat-number { font-size: 42px; }
+
+      /* Founders */
+      .founders-grid { grid-template-columns: 1fr; gap: 20px; }
+      .founder-img { height: 460px; }
+
+      /* Testimonials — one card per view, peek the next */
+      .testi-card { flex-basis: 84%; min-width: 0; }
+
+      /* Contact */
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+
+      /* Footer */
+      footer { flex-direction: column; gap: 22px; text-align: center; padding: 36px 24px; }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 18px; }
+    }
+
+    @media (max-width: 520px) {
+      .section-h2 { font-size: clamp(28px, 8vw, 36px); }
+      .form-row { grid-template-columns: 1fr; }
+      .hero-ctas { flex-direction: column; align-items: stretch; gap: 16px; }
+      .hero-ctas .btn-primary { text-align: center; }
+      #meshCanvas { max-width: 86vw; }
+      .hero-glow { width: 80vw; height: 80vw; }
+      .founder-img { height: 380px; }
+      .midcta-glow { width: 90vw; }
+      .stat-number { font-size: 38px; }
+      .stat-tile { padding: 32px 20px; }
+    }
   </style>
 </head>
 <body>
@@ -866,13 +993,18 @@
   <!-- ─── NAV ─── -->
   <nav id="mainNav">
     <a href="#" class="nav-logo"><img src="./Assets/Divinify_Primary - White Resized (no productions).png" alt="Divinify"></a>
-    <ul class="nav-links">
-      <li><a href="#services">Services</a></li>
-      <li><a href="#why">Why Us</a></li>
-      <li><a href="#founders">Founders</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <a href="#contact" class="nav-cta">Start a Project</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-menu" id="navMenu">
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#founders">Founders</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#contact" class="nav-cta">Start a Project</a>
+    </div>
   </nav>
 
   <!-- ─── HERO ─── -->
@@ -1312,6 +1444,24 @@
         this.reset();
       }, 3000);
     });
+
+    // ─── MOBILE NAV TOGGLE ───
+    (function() {
+      const nav = document.getElementById('mainNav');
+      const toggle = document.getElementById('navToggle');
+      if (!nav || !toggle) return;
+      toggle.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      // Close the menu after tapping any link / CTA.
+      nav.querySelectorAll('.nav-links a, .nav-cta').forEach(a => {
+        a.addEventListener('click', () => {
+          nav.classList.remove('open');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    })();
 
     // ─── NEURAL MESH CANVAS ───
     (function() {
