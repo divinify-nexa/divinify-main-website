@@ -1,0 +1,137 @@
+/* ───────────────────────────────────────────────
+   Divinify — Project detail pages
+   Layers on top of work.css (tokens, nav, footer, buttons, #work-cta).
+   Rendered by project.js from projects-data.js.
+─────────────────────────────────────────────── */
+.pd-wrap { max-width: 1080px; margin: 0 auto; padding: 0 80px; }
+
+.pd-top { padding-top: 116px; }
+.pd-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--sub); text-decoration: none;
+  transition: color 0.2s, gap 0.2s;
+}
+.pd-back:hover { color: var(--accent); gap: 12px; }
+.pd-back svg { width: 14px; height: 14px; }
+
+/* Hero — centered */
+.pd-hero { position: relative; text-align: center; padding: 40px 0 0; overflow: hidden; }
+.pd-hero-glow {
+  position: absolute;
+  top: 30%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 760px; height: 420px; max-width: 92vw;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(245,200,66,0.13) 0%, transparent 70%);
+  pointer-events: none;
+  animation: pdGlow 5s ease-in-out infinite;
+}
+@keyframes pdGlow {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50%       { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) { .pd-hero-glow { animation: none; } }
+.pd-hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+.pd-hero .section-tag { margin-bottom: 18px; }
+.pd-title {
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  margin-bottom: 20px;
+}
+.pd-tagline {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 400;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Video */
+.pd-video-wrap { margin-top: 52px; }
+.pd-video {
+  display: block; position: relative;
+  width: 100%; aspect-ratio: 16 / 9;
+  border-radius: 18px; overflow: hidden;
+  border: 1px solid var(--border-mid);
+  background: var(--bg-lift2);
+  text-decoration: none; cursor: pointer;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.pd-video:hover { border-color: var(--accent-glow); box-shadow: 0 30px 90px rgba(0,0,0,0.55), 0 0 0 1px var(--accent-glow); }
+.pd-video img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s ease; }
+.pd-video:hover img { transform: scale(1.04); }
+.pd-video .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,9,9,0.5) 0%, rgba(8,9,9,0) 55%); pointer-events: none; }
+.pd-video .play-btn {
+  position: absolute; top: 50%; left: 50%; z-index: 2;
+  width: 84px; height: 84px;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.pd-video:hover .play-btn { transform: translate(-50%, -50%) scale(1.08); background: rgba(8,9,9,0.4); }
+.pd-video .play-btn svg { width: 30px; height: 30px; margin-left: 4px; }
+.pd-video .note {
+  position: absolute; left: 20px; bottom: 18px; z-index: 2;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text);
+  background: rgba(8,9,9,0.55);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  border: 1px solid var(--border-mid);
+  padding: 7px 12px; border-radius: 7px; pointer-events: none;
+}
+.pd-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+/* Overview — minimal, centered */
+.pd-overview { max-width: 660px; margin: 0 auto; padding: 84px 0 0; text-align: center; }
+.pd-overview .section-tag { margin-bottom: 20px; }
+.pd-overview p { font-size: 17px; color: var(--sub); line-height: 1.8; margin-bottom: 18px; }
+.pd-overview p:last-child { margin-bottom: 0; }
+.pd-overview em { font-style: italic; color: var(--accent); }
+
+/* Credits band — symmetrical, organized: Client / Deliverables / What we did */
+.pd-credits {
+  max-width: 920px; margin: 88px auto 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px;
+  padding-top: 48px; border-top: 1px solid var(--border);
+  align-items: start;
+}
+.pd-cred-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dim); display: block; margin-bottom: 16px;
+}
+.pd-cred-val { font-size: 14px; color: var(--sub); line-height: 1.7; }
+.pd-tags { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.pd-tag {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 300;
+  letter-spacing: 0.04em; color: var(--sub);
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  padding: 9px 8px; border-radius: 6px; white-space: nowrap;
+  text-align: center;
+}
+.pd-checks { list-style: none; }
+.pd-checks li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 14px; color: var(--sub); line-height: 1.5; margin-bottom: 11px;
+}
+.pd-checks li:last-child { margin-bottom: 0; }
+.pd-checks svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+
+.pd-foot-space { height: 110px; }
+
+@media (max-width: 880px) {
+  .pd-wrap { padding: 0 24px; }
+  .pd-top { padding-top: 104px; }
+  .pd-video-wrap { margin-top: 36px; }
+  .pd-overview { padding-top: 64px; }
+  .pd-credits { grid-template-columns: 1fr; gap: 32px; margin-top: 56px; }
+  .pd-foot-space { height: 80px; }
+}
+@media (max-width: 520px) {
+  .pd-title { font-size: clamp(34px, 10vw, 46px); }
+  .pd-video .play-btn { width: 66px; height: 66px; }
+}
