@@ -351,8 +351,6 @@
     /* ─── TRUSTED BY ─── */
     #trusted {
       padding: 60px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
       overflow: hidden;
     }
     .trusted-label {
@@ -537,47 +535,63 @@
       line-height: 1.7;
     }
 
-    /* ─── STATS ─── */
-    #stats {
-      padding: 80px 80px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+    /* ─── CORE VALUES ─── */
+    #values {
+      padding: 120px 80px;
     }
-    .stats-grid {
+    .values-header {
+      max-width: 520px;
+      margin-bottom: 64px;
+    }
+    .values-header .section-h2 { margin-bottom: 14px; }
+    .values-subline {
+      font-size: 16px;
+      color: var(--sub);
+      line-height: 1.7;
+    }
+    .values-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      gap: 32px;
     }
-    .stat-tile {
-      background: var(--bg);
-      padding: 40px 36px;
-      text-align: center;
+    .value-item {
+      position: relative;
+      padding-top: 30px;
+      border-top: 1px solid var(--border-mid);
     }
-    .stat-number {
-      font-size: 52px;
-      font-weight: 300;
-      line-height: 1;
-      letter-spacing: -0.04em;
-      margin-bottom: 10px;
+    /* short accent segment riding the top rule — the distinctive editorial marker */
+    .value-item::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 0;
+      width: 46px; height: 2px;
+      background: var(--accent-grad);
     }
-    .stat-number span { color: var(--accent); }
-    .stat-label {
+    .value-index {
       font-family: 'DM Mono', monospace;
       font-size: 11px;
-      font-weight: 300;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 56px;   /* push title down so the index reads as a header marker */
+    }
+    .value-title {
+      font-size: 19px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .value-copy {
+      font-size: 14px;
       color: var(--sub);
+      line-height: 1.75;
     }
 
     /* ─── MID CTA ─── */
     #midcta {
-      padding: 140px 80px;
-      text-align: center;
+      padding: 72px 80px;
       position: relative;
       overflow: hidden;
     }
@@ -585,23 +599,40 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 600px;
-      height: 400px;
+      width: 520px;
+      height: 280px;
       border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(245,200,66,0.10) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(245,200,66,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
-    #midcta .section-tag { justify-content: center; display: block; }
-    #midcta .section-h2 { margin-bottom: 20px; }
-    #midcta .sub {
-      font-size: 17px;
-      color: var(--sub);
-      margin-bottom: 40px;
-      max-width: 460px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.7;
+    .midcta-inner {
+      position: relative;
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+      padding: 32px 40px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.018);
     }
+    .midcta-inner .section-tag { margin-bottom: 10px; }
+    .midcta-inner h3 {
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .midcta-inner .sub {
+      font-size: 14px;
+      color: var(--sub);
+      line-height: 1.6;
+      margin-top: 8px;
+      max-width: 420px;
+    }
+    .midcta-inner .btn-primary { flex-shrink: 0; }
 
     /* ─── FOUNDERS ─── */
     #founders { padding: 120px 80px; }
@@ -920,6 +951,34 @@
       min-height: 120px;
       line-height: 1.6;
     }
+    /* Multi-select service chips */
+    .service-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .service-chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text);
+      text-align: center;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+      -webkit-appearance: none;
+    }
+    .service-chip:hover { border-color: var(--border-hi); }
+    .service-chip.selected {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
     .btn-submit {
       width: 100%;
       background: var(--accent-grad);
@@ -1044,8 +1103,10 @@
     @media (max-width: 880px) {
       section { padding: 80px 24px; }
       #why, #founders, #testimonials, #contact { padding: 80px 24px; }
-      #stats { padding: 56px 24px; }
-      #midcta { padding: 96px 24px; }
+      #values { padding: 80px 24px; }
+      #midcta { padding: 64px 24px; }
+      .midcta-inner { flex-direction: column; align-items: flex-start; gap: 24px; padding: 28px 24px; }
+      .midcta-inner .btn-primary { width: 100%; text-align: center; }
 
       /* Nav → hamburger dropdown */
       nav { padding: 0 20px; }
@@ -1129,9 +1190,9 @@
       .why-left { position: static; top: auto; }
       .why-desc { max-width: none; }
 
-      /* Stats */
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-      .stat-number { font-size: 42px; }
+      /* Core values */
+      .values-grid { grid-template-columns: 1fr 1fr; gap: 28px 24px; }
+      .value-index { margin-bottom: 32px; }
 
       /* Founders */
       .founders-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -1155,14 +1216,14 @@
     @media (max-width: 520px) {
       .section-h2 { font-size: clamp(28px, 8vw, 36px); }
       .form-row { grid-template-columns: 1fr; }
+      .service-options { grid-template-columns: 1fr; }
       .hero-ctas { flex-direction: column; align-items: stretch; gap: 16px; }
       .hero-ctas .btn-primary { text-align: center; }
       #meshCanvas { max-width: 86vw; }
       .hero-glow { width: 80vw; height: 80vw; }
       .founder-img { height: 380px; }
       .midcta-glow { width: 90vw; }
-      .stat-number { font-size: 38px; }
-      .stat-tile { padding: 32px 20px; }
+      .values-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1303,8 +1364,8 @@
     <div class="why-grid">
       <div class="why-left reveal">
         <span class="section-tag">The difference</span>
-        <h2 class="section-h2">Not an agency.<br>A build team.</h2>
-        <p class="why-desc">Most agencies manage the relationship and outsource the work. We are the people doing the work — and that changes everything about how a project goes.</p>
+        <h2 class="section-h2">Not an agency.<br>A growth partner.</h2>
+        <p class="why-desc">Most agencies manage the relationship and outsource the work. We do the work ourselves, and it changes how the whole project goes.</p>
         <a href="#contact" class="btn-primary">Work with us</a>
       </div>
       <div class="why-items">
@@ -1312,59 +1373,68 @@
           <span class="why-num">01</span>
           <div>
             <div class="why-item-title">We build across the full stack</div>
-            <div class="why-item-copy">Web, backend, automation, and video under one roof. No handoffs, no translation layer — just output.</div>
+            <div class="why-item-copy">Web, backend, automation, and video under one roof. No handoffs, no translation layers between you and the build.</div>
           </div>
         </div>
         <div class="why-item reveal reveal-d1">
           <span class="why-num">02</span>
           <div>
-            <div class="why-item-title">We treat your business like a problem worth solving</div>
-            <div class="why-item-copy">We don't start from templates. We start from outcomes — what you're trying to achieve and what's in the way.</div>
+            <div class="why-item-title">We start from your problem, not a template</div>
+            <div class="why-item-copy">We start from the outcome you need and what's standing in the way of it.</div>
           </div>
         </div>
         <div class="why-item reveal reveal-d2">
           <span class="why-num">03</span>
           <div>
             <div class="why-item-title">AI is a tool we actually know how to use</div>
-            <div class="why-item-copy">Not talking points. Real deployment — voice agents, pipelines, and systems with measurable impact on your operations.</div>
+            <div class="why-item-copy">We deploy AI that does real work: voice agents, pipelines, and systems with measurable impact on your operations.</div>
           </div>
         </div>
         <div class="why-item reveal reveal-d3">
           <span class="why-num">04</span>
           <div>
-            <div class="why-item-title">You talk to the people doing the work</div>
-            <div class="why-item-copy">No account managers. No intermediaries. The person you talk to in the first call is the person building it.</div>
+            <div class="why-item-title">You work directly with the builders</div>
+            <div class="why-item-copy">No layers of account managers to relay through. You collaborate straight with the people designing and building your project, with one clear point of contact accountable from kickoff to delivery.</div>
           </div>
         </div>
         <div class="why-item reveal reveal-d4">
           <span class="why-num">05</span>
           <div>
-            <div class="why-item-title">Project or retainer — built for how you work</div>
-            <div class="why-item-copy">Whether you need a one-time build or ongoing infrastructure support, the engagement is structured around your business, not our billing model.</div>
+            <div class="why-item-title">Project or retainer, built for how you work</div>
+            <div class="why-item-copy">Whether you need a one-time build or ongoing infrastructure support, we structure the engagement around your business, not our billing model.</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ─── STATS ─── -->
-  <section id="stats">
-    <div class="stats-grid">
-      <div class="stat-tile reveal">
-        <div class="stat-number"><span>30</span>+</div>
-        <div class="stat-label">Projects Shipped</div>
+  <!-- ─── CORE VALUES ─── -->
+  <section id="values">
+    <div class="values-header reveal">
+      <span class="section-tag">What we stand for</span>
+      <h2 class="section-h2">Core values.</h2>
+      <p class="values-subline">The principles behind how we work and what we build. (Placeholder — final values coming soon.)</p>
+    </div>
+    <div class="values-grid">
+      <div class="value-item reveal">
+        <span class="value-index">01</span>
+        <div class="value-title">Value One</div>
+        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
       </div>
-      <div class="stat-tile reveal reveal-d1">
-        <div class="stat-number"><span>3</span>x</div>
-        <div class="stat-label">Avg. Efficiency Gain</div>
+      <div class="value-item reveal reveal-d1">
+        <span class="value-index">02</span>
+        <div class="value-title">Value Two</div>
+        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
       </div>
-      <div class="stat-tile reveal reveal-d2">
-        <div class="stat-number"><span>100</span>%</div>
-        <div class="stat-label">Founder-Led Delivery</div>
+      <div class="value-item reveal reveal-d2">
+        <span class="value-index">03</span>
+        <div class="value-title">Value Three</div>
+        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
       </div>
-      <div class="stat-tile reveal reveal-d3">
-        <div class="stat-number"><span>5</span>+</div>
-        <div class="stat-label">Industries Served</div>
+      <div class="value-item reveal reveal-d3">
+        <span class="value-index">04</span>
+        <div class="value-title">Value Four</div>
+        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
       </div>
     </div>
   </section>
@@ -1372,10 +1442,14 @@
   <!-- ─── MID CTA ─── -->
   <section id="midcta">
     <div class="midcta-glow"></div>
-    <span class="section-tag reveal">Ready when you are</span>
-    <h2 class="section-h2 reveal reveal-d1">Got a project in mind?<br>Let's build it.</h2>
-    <p class="sub reveal reveal-d2">Most clients know within the first conversation whether we're the right fit.</p>
-    <a href="#contact" class="btn-primary reveal reveal-d3">Start the conversation</a>
+    <div class="midcta-inner reveal">
+      <div>
+        <span class="section-tag">Ready when you are</span>
+        <h3>Got a project in mind? Let's build it.</h3>
+        <p class="sub">Most clients know within the first conversation whether we're a fit.</p>
+      </div>
+      <a href="#contact" class="btn-primary">Start the conversation</a>
+    </div>
   </section>
 
   <!-- ─── FOUNDERS ─── -->
@@ -1391,7 +1465,7 @@
         <div class="founder-info">
           <div class="founder-name">Carter Mason</div>
           <div class="founder-title">Co-Founder, Operations &amp; Client Experience</div>
-          <p class="founder-bio">Carter is the relationship engine at Divinify. He drives client strategy, oversees day-to-day operations, and leads automation facilitation — translating business goals into systems that actually work. With a strong foundation in video production and content creation, Carter brings creative instincts to every technical conversation. He's genuinely curious about AI and what it can unlock when used with intention.</p>
+          <p class="founder-bio">Carter leads client strategy and day-to-day operations, and runs the automation work that turns business goals into systems that actually run. With a background in video production and content, he brings a creative read to every technical conversation. He's deeply curious about AI and what it can do for a business when it's used with intention.</p>
           <div class="founder-tags">
             <span class="founder-tag">Client Strategy</span>
             <span class="founder-tag">AI &amp; Automation</span>
@@ -1405,7 +1479,7 @@
         <div class="founder-info">
           <div class="founder-name">Merritt Mason</div>
           <div class="founder-title">Co-Founder, Technology &amp; Systems Architecture</div>
-          <p class="founder-bio">Merritt is the technical backbone of Divinify. He handles the architecture, the data infrastructure, and the parts of a build that most people don't want to touch. Analytical and direct, he approaches every project through the lens of ROI — designing workflows and systems that have measurable impact. He's as comfortable deep in a database schema as he is in a client strategy session, and that range is what makes the work exceptional.</p>
+          <p class="founder-bio">Merritt handles the architecture, the data infrastructure, and the parts of a build most people would rather avoid. Analytical and direct, he judges every project on ROI and designs workflows that have measurable impact. He's as comfortable deep in a database schema as he is in a client strategy session, and that range shows up in the work.</p>
           <div class="founder-tags">
             <span class="founder-tag">Systems Architecture</span>
             <span class="founder-tag">Data &amp; Analytics</span>
@@ -1420,7 +1494,7 @@
   <!-- ─── TESTIMONIALS ─── -->
   <section id="testimonials">
     <div class="testimonials-header reveal">
-      <span class="section-tag">Social proof</span>
+      <span class="section-tag">Reviews</span>
       <h2 class="section-h2">What clients actually say.</h2>
     </div>
     <div class="testimonials-wrap">
@@ -1547,7 +1621,7 @@
         <span class="section-tag">Get in touch</span>
         <h2 class="section-h2">Let's build<br>something real.</h2>
         <p class="contact-desc">
-          Tell us what you're working toward and we'll tell you how we'd approach it. No pitch decks, no fluff — just an honest conversation about whether we're the right fit.
+          Tell us what you're working toward and we'll tell you how we'd approach it. No pitch decks, just an honest conversation about whether we're a fit.
         </p>
         <p class="contact-detail"><a href="mailto:info@divinify.io">info@divinify.io</a></p>
         <p class="contact-detail">Atlanta, Georgia</p>
@@ -1573,6 +1647,15 @@
             <input type="text" class="form-input" placeholder="Acme Corp">
           </div>
           <div class="form-group">
+            <label class="form-label">What are you interested in? (Select all that apply)</label>
+            <div class="service-options" id="serviceOptions">
+              <button type="button" class="service-chip" aria-pressed="false">Custom Software &amp; Web Development</button>
+              <button type="button" class="service-chip" aria-pressed="false">AI &amp; Automation</button>
+              <button type="button" class="service-chip" aria-pressed="false">Video Production</button>
+              <button type="button" class="service-chip" aria-pressed="false">Other</button>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-label">Engagement Type</label>
             <select class="form-select">
               <option value="" disabled selected>Select one...</option>
@@ -1596,7 +1679,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="#" class="footer-logo"><img src="./Assets/divinify-logo-white.png" alt="Divinify"></a>
-        <p class="footer-tagline">Custom software, backend AI automation, and video production — built in-house.</p>
+        <p class="footer-tagline">Custom software, backend AI automation, and video production. Built in-house.</p>
         <p class="footer-location">Atlanta, Georgia</p>
       </div>
       <div class="footer-col">
@@ -1651,6 +1734,14 @@
     }, { threshold: 0.12 });
     revealEls.forEach(el => observer.observe(el));
 
+    // ─── SERVICE INTEREST CHIPS (multi-select) ───
+    document.querySelectorAll('#serviceOptions .service-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const on = chip.classList.toggle('selected');
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+
     // ─── CONTACT FORM ───
     document.getElementById('contactForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -1661,6 +1752,10 @@
         btn.textContent = 'Send Message →';
         btn.classList.remove('success');
         this.reset();
+        this.querySelectorAll('.service-chip.selected').forEach(chip => {
+          chip.classList.remove('selected');
+          chip.setAttribute('aria-pressed', 'false');
+        });
       }, 3000);
     });
 
