@@ -346,6 +346,8 @@
     }
     @media (prefers-reduced-motion: reduce) {
       #hero::after { animation: none; }
+      .value-item:hover::before,
+      .value-item:hover::after { animation: none; }
     }
 
     /* ─── TRUSTED BY ─── */
@@ -552,41 +554,111 @@
     .values-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 32px;
+      gap: 24px;
+    }
+    /* animatable angle drives the rotating gradient border */
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
     }
     .value-item {
+      --rx: 0deg; --ry: 0deg; --angle: 0deg;
       position: relative;
-      padding-top: 30px;
-      border-top: 1px solid var(--border-mid);
+      border-radius: 18px;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+      transition: transform .55s cubic-bezier(.2,.7,.2,1);
     }
-    /* short accent segment riding the top rule — the distinctive editorial marker */
-    .value-item::before {
+    .value-item.tilting { transition: transform .08s linear; }
+    /* crisp gold gradient ring + blurred outer halo, lit on hover */
+    .value-item::before,
+    .value-item::after {
       content: '';
       position: absolute;
-      top: -1px; left: 0;
-      width: 46px; height: 2px;
-      background: var(--accent-grad);
+      inset: -1.5px;
+      border-radius: inherit;
+      background: conic-gradient(from var(--angle),
+        #8a5806, #e8960a, #f5c842, #fff4cd, #f5c842, #e8960a, #8a5806);
+      opacity: 0;
+      transform: translateZ(-1px);
+      transition: opacity .55s ease;
+      pointer-events: none;
     }
+    .value-item::after {
+      inset: -3px;
+      filter: blur(20px);
+      transform: translateZ(-2px);
+    }
+    .value-item:hover::before { opacity: 1; animation: value-spin 5s linear infinite; }
+    .value-item:hover::after  { opacity: .5; animation: value-spin 5s linear infinite; }
+    @keyframes value-spin { to { --angle: 360deg; } }
+    /* dark inner surface holding the content */
+    .value-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 34px 28px 36px;
+      border-radius: inherit;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--bg-lift) 0%, var(--bg) 100%);
+      border: 1px solid var(--border);
+      transition: border-color .45s ease, background .45s ease, box-shadow .45s ease;
+    }
+    .value-item:hover .value-inner {
+      border-color: transparent;
+      background: linear-gradient(180deg, var(--bg-lift2) 0%, var(--bg) 100%);
+    }
+    .value-item.tilting .value-inner {
+      box-shadow: 0 34px 64px -34px rgba(0,0,0,0.85);
+    }
+    /* oversized ghost numeral — reads as texture, warms to accent on hover */
+    .value-inner::after {
+      content: attr(data-num);
+      position: absolute;
+      top: -22px; right: 4px;
+      font-family: 'DM Mono', monospace;
+      font-size: 104px;
+      font-weight: 400;
+      line-height: 1;
+      color: rgba(255,255,255,0.035);
+      pointer-events: none;
+      transition: color .45s ease;
+    }
+    .value-item:hover .value-inner::after { color: var(--accent-dim); }
     .value-index {
+      position: relative;
       font-family: 'DM Mono', monospace;
       font-size: 11px;
       font-weight: 400;
       letter-spacing: 0.2em;
       color: var(--accent);
-      display: block;
-      margin-bottom: 56px;   /* push title down so the index reads as a header marker */
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 44px;
+    }
+    /* glowing dot marker before the index */
+    .value-index::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 9px var(--accent-glow);
     }
     .value-title {
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 400;
       letter-spacing: -0.01em;
       color: var(--text);
-      margin-bottom: 12px;
+      margin-bottom: 13px;
     }
     .value-copy {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--sub);
-      line-height: 1.75;
+      line-height: 1.78;
     }
 
     /* ─── MID CTA ─── */
@@ -636,7 +708,7 @@
 
     /* ─── FOUNDERS ─── */
     #founders { padding: 120px 80px; }
-    .founders-header { margin-bottom: 64px; }
+    .founders-header { margin-bottom: 56px; text-align: center; }
     .founders-header .section-h2 { margin-bottom: 12px; }
     .founders-subline {
       font-size: 16px;
@@ -646,7 +718,9 @@
     .founders-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 28px;
+      gap: 24px;
+      max-width: 840px;
+      margin: 0 auto;
     }
     .founder-card {
       border: 1px solid var(--border);
@@ -660,7 +734,7 @@
     .founder-card:hover { border-color: var(--accent-glow); }
     .founder-img {
       width: 100%;
-      height: 520px;
+      height: 400px;
       flex-shrink: 0;
       object-fit: cover;
       object-position: center 30%;
@@ -675,13 +749,13 @@
       transform: scale(0.95);
     }
     .founder-info {
-      padding: 32px 32px 28px;
+      padding: 26px 26px 24px;
       display: flex;
       flex-direction: column;
       flex: 1;
     }
     .founder-name {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 400;
       letter-spacing: -0.015em;
       margin-bottom: 4px;
@@ -696,10 +770,10 @@
       margin-bottom: 18px;
     }
     .founder-bio {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--sub);
-      line-height: 1.75;
-      margin-bottom: 24px;
+      line-height: 1.72;
+      margin-bottom: 22px;
     }
     .founder-tags {
       display: flex;
@@ -1191,8 +1265,10 @@
       .why-desc { max-width: none; }
 
       /* Core values */
-      .values-grid { grid-template-columns: 1fr 1fr; gap: 28px 24px; }
-      .value-index { margin-bottom: 32px; }
+      .values-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+      .value-inner { padding: 30px 26px 32px; }
+      .value-index { margin-bottom: 36px; }
+      .value-inner::after { font-size: 88px; }
 
       /* Founders */
       .founders-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -1413,28 +1489,36 @@
     <div class="values-header reveal">
       <span class="section-tag">What we stand for</span>
       <h2 class="section-h2">Core values.</h2>
-      <p class="values-subline">The principles behind how we work and what we build. (Placeholder — final values coming soon.)</p>
+      <p class="values-subline">The principles behind how we work and what we build.</p>
     </div>
     <div class="values-grid">
       <div class="value-item reveal">
-        <span class="value-index">01</span>
-        <div class="value-title">Value One</div>
-        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
+        <div class="value-inner" data-num="01">
+          <span class="value-index">01</span>
+          <div class="value-title">Excellence</div>
+          <p class="value-copy">"Good enough" has never sat right with us. If our name is going on something, it gets the version we'd actually be proud to show people. We hold to that standard because we'd want the same in your position. You deserve work that was done right, not just done.</p>
+        </div>
       </div>
       <div class="value-item reveal reveal-d1">
-        <span class="value-index">02</span>
-        <div class="value-title">Value Two</div>
-        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
+        <div class="value-inner" data-num="02">
+          <span class="value-index">02</span>
+          <div class="value-title">Communication</div>
+          <p class="value-copy">You should never have to wonder where your project stands. We tell you straight: what we're building, why we're building it, and what's working along the way. No jargon, no disappearing for weeks, no surprises. Just honest conversation with people who actually pick up the phone.</p>
+        </div>
       </div>
       <div class="value-item reveal reveal-d2">
-        <span class="value-index">03</span>
-        <div class="value-title">Value Three</div>
-        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
+        <div class="value-inner" data-num="03">
+          <span class="value-index">03</span>
+          <div class="value-title">Discipline</div>
+          <p class="value-copy">Anyone can have a great idea. The rare part is showing up to do the unglamorous work, the testing and the reps and the small details nobody notices. That's the part we're good at, and it's how things actually get finished and actually perform.</p>
+        </div>
       </div>
       <div class="value-item reveal reveal-d3">
-        <span class="value-index">04</span>
-        <div class="value-title">Value Four</div>
-        <p class="value-copy">Placeholder for the value and why it matters to how we work.</p>
+        <div class="value-inner" data-num="04">
+          <span class="value-index">04</span>
+          <div class="value-title">Intention</div>
+          <p class="value-copy">We don't build on autopilot. Every shot, every line of code, every automation is there for a reason that ties back to what you're trying to accomplish. If it doesn't serve your goal, it doesn't make the cut.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -1733,6 +1817,35 @@
       });
     }, { threshold: 0.12 });
     revealEls.forEach(el => observer.observe(el));
+
+    // ─── CORE VALUE CARDS — cursor-tracked 3D tilt ───
+    (function () {
+      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!fine || reduce) return;
+      const MAX = 7; // max tilt in degrees
+      document.querySelectorAll('.value-item').forEach(card => {
+        let raf = null;
+        card.addEventListener('pointerenter', () => card.classList.add('tilting'));
+        card.addEventListener('pointermove', e => {
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = null;
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;   // 0 → 1
+            const py = (e.clientY - r.top) / r.height;   // 0 → 1
+            card.style.setProperty('--ry', ((px - 0.5) * MAX * 2).toFixed(2) + 'deg');
+            card.style.setProperty('--rx', ((0.5 - py) * MAX * 2).toFixed(2) + 'deg');
+          });
+        });
+        card.addEventListener('pointerleave', () => {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          card.classList.remove('tilting');
+          card.style.setProperty('--rx', '0deg');
+          card.style.setProperty('--ry', '0deg');
+        });
+      });
+    })();
 
     // ─── SERVICE INTEREST CHIPS (multi-select) ───
     document.querySelectorAll('#serviceOptions .service-chip').forEach(chip => {
