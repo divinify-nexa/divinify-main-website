@@ -27,17 +27,17 @@ window.PROJECTS = [
 
   /* ── AI & Automation ── */
   {
-    slug: 'n8n-workflow-engine', name: 'n8n Workflow Engine', category: 'ai', tag: 'AI & Automation',
+    slug: 'n8n-workflow-engine', name: 'n8n Workflow Engine', category: 'ai', tag: 'AI & Automation', shape: 'lattice',
     description: 'Automated applicant fan-out: Google Drive folder creation, Sheets logging, and Gmail notifications, all triggered by a single form submission.',
     stat: 'Reduced applicant intake time by 60%', action: 'case'
   },
   {
-    slug: 'robly-ai-agent', name: 'Robly AI Agent', category: 'ai', tag: 'AI & Automation',
+    slug: 'robly-ai-agent', name: 'Robly AI Agent', category: 'ai', tag: 'AI & Automation', shape: 'orb',
     description: 'AI-powered email campaign intelligence layer built in n8n with a Slack interface. Analyzes performance and surfaces optimization recommendations.',
     stat: 'Campaign insights delivered in Slack', action: 'case'
   },
   {
-    slug: 'voice-ai-integration', name: 'Voice AI Integration', category: 'ai', tag: 'AI & Automation',
+    slug: 'voice-ai-integration', name: 'Voice AI Integration', category: 'ai', tag: 'AI & Automation', shape: 'helix',
     description: 'Bilingual (English/Spanish) voice agent built with Retell AI + ElevenLabs for a commercial real estate firm, handling inbound lead qualification.',
     stat: '24/7 bilingual lead qualification', action: 'case'
   },

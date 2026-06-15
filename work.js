@@ -35,22 +35,15 @@
       '</div></div>';
   }
 
-  function aiVisual() {
-    var nodes = [[40,70],[95,38],[120,98],[175,60],[205,118],[150,140],[80,128],[235,72],[60,40]];
-    var edges = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,0],[1,3],[3,7],[5,2],[8,1],[8,0]];
-    var W = 280, H = 180, e = '', n = '';
-    edges.forEach(function (pair) {
-      var a = nodes[pair[0]], b = nodes[pair[1]];
-      e += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="rgba(245,200,66,0.32)" stroke-width="1"/>';
-    });
-    nodes.forEach(function (pt, i) {
-      var r = i % 3 === 0 ? 4.5 : 3;
-      n += '<circle cx="' + pt[0] + '" cy="' + pt[1] + '" r="' + (r + 3) + '" fill="rgba(245,200,66,0.10)"/>';
-      n += '<circle cx="' + pt[0] + '" cy="' + pt[1] + '" r="' + r + '" fill="#f5c842"/>';
-    });
-    return '<div class="card-visual"><div class="visual-ai">' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
-      e + n + '</svg></div></div>';
+  // Living rotating mesh-orb — a play on the homepage hero. Each AI card
+  // gets a different shape (sphere / lattice / helix / ring) so every
+  // system reads as its own distinct, almost-alive organism.
+  function aiVisual(p) {
+    var shape = (p && p.shape) || 'orb';
+    return '<div class="card-visual">' +
+      '<span class="ai-orb-glow" aria-hidden="true"></span>' +
+      '<canvas class="ai-orb" data-shape="' + shape + '" aria-hidden="true"></canvas>' +
+    '</div>';
   }
 
   function videoVisual() {
@@ -79,7 +72,7 @@
     var href = p.href || ('#' + p.slug); // detail pages aren't built yet
     var visual = p.image
       ? imageVisual(p, p.category === 'video')
-      : (VISUALS[p.category] || softwareVisual)();
+      : (VISUALS[p.category] || softwareVisual)(p);
 
     var body;
     if (p.category === 'video') {
@@ -117,12 +110,137 @@
     });
   }
 
+  /* ── LIVING MESH-ORB ENGINE (AI card visuals) ──
+     Different node distributions → different "organisms", all rotating. */
+  function genSphere(n, r) {
+    var pts = [], phi = Math.PI * (3 - Math.sqrt(5));
+    for (var i = 0; i < n; i++) {
+      var y = 1 - (i / (n - 1)) * 2, rad = Math.sqrt(1 - y * y), th = phi * i;
+      pts.push({ ox: r * rad * Math.cos(th), oy: r * y, oz: r * rad * Math.sin(th) });
+    }
+    return pts;
+  }
+  function genLattice(_, r) {
+    var pts = [], s = r * 0.6, g = [-1, 0, 1];
+    for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) for (var k = 0; k < 3; k++) {
+      pts.push({ ox: g[i] * s, oy: g[j] * s, oz: g[k] * s });
+    }
+    return pts;
+  }
+  function genHelix(n, r) {
+    var pts = [], per = Math.round(n / 2), turns = 2.2;
+    for (var s = 0; s < 2; s++) {
+      for (var i = 0; i < per; i++) {
+        var t = i / (per - 1), ang = t * turns * Math.PI * 2 + s * Math.PI;
+        pts.push({ ox: Math.cos(ang) * r * 0.55, oy: (t - 0.5) * 1.9 * r, oz: Math.sin(ang) * r * 0.55 });
+      }
+    }
+    return pts;
+  }
+  function genRing(n, r) {
+    var pts = [], R = r * 0.86;
+    for (var i = 0; i < n; i++) { var a = (i / n) * Math.PI * 2; pts.push({ ox: Math.cos(a) * R, oy: 0, oz: Math.sin(a) * R }); }
+    return pts;
+  }
+  var ORB_SHAPES = {
+    orb:     { count: 30, maxD: 0.62, gen: genSphere },
+    lattice: { count: 27, maxD: 0.74, gen: genLattice },
+    helix:   { count: 28, maxD: 0.52, gen: genHelix },
+    ring:    { count: 26, maxD: 0.50, gen: genRing }
+  };
+  var ACCENT = [245, 200, 66];
+
+  function initOrb(canvas) {
+    var ctx = canvas.getContext('2d');
+    var cfg = ORB_SHAPES[canvas.getAttribute('data-shape')] || ORB_SHAPES.orb;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W = 0, H = 0, CX = 0, CY = 0, R = 0, MAXD = 0, nodes = [], dpr = 1;
+    var t0 = Math.random() * 4000, raf = null, visible = true;
+
+    function build() {
+      var rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return false;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = rect.width; H = rect.height;
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      CX = W / 2; CY = H / 2; R = Math.min(W, H) * 0.34; MAXD = R * cfg.maxD;
+      nodes = cfg.gen(cfg.count, R).map(function (pt) {
+        return { ox: pt.ox, oy: pt.oy, oz: pt.oz, phase: Math.random() * Math.PI * 2, speed: 0.008 + Math.random() * 0.012 };
+      });
+      return true;
+    }
+
+    function drawFrame(ts) {
+      if (!W && !build()) return;
+      ctx.clearRect(0, 0, W, H);
+      var t = (ts + t0) * 0.001;
+      var ay = t * 0.14 + 0.4 * Math.sin(t * 0.2);
+      var ax = 0.5 * Math.sin(t * 0.17);
+      var az = 0.2 * Math.sin(t * 0.13);
+      var cx = Math.cos(ax), sxr = Math.sin(ax), cyr = Math.cos(ay), syr = Math.sin(ay), cz = Math.cos(az), szr = Math.sin(az);
+      var proj = nodes.map(function (nd) {
+        var x = nd.ox, y = nd.oy, z = nd.oz;
+        var ny = y * cx - z * sxr, nz = y * sxr + z * cx; y = ny; z = nz;
+        var nx = x * cyr - z * syr; nz = x * syr + z * cyr; x = nx; z = nz;
+        nx = x * cz - y * szr; ny = x * szr + y * cz; x = nx; y = ny;
+        var depth = (z + R) / (2 * R);
+        var pulse = 0.85 + 0.15 * Math.sin(ts * 0.001 * nd.speed * 6 + nd.phase);
+        return { sx: CX + x, sy: CY + y, depth: depth, pulse: pulse };
+      });
+      for (var i = 0; i < proj.length; i++) {
+        for (var j = i + 1; j < proj.length; j++) {
+          var a = proj[i], b = proj[j], dx = a.sx - b.sx, dy = a.sy - b.sy, dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAXD) {
+            var al = (1 - dist / MAXD) * 0.5 * ((a.depth + b.depth) / 2) * 0.8;
+            ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy);
+            ctx.strokeStyle = 'rgba(' + ACCENT[0] + ',' + ACCENT[1] + ',' + ACCENT[2] + ',' + al + ')';
+            ctx.lineWidth = 0.8; ctx.stroke();
+          }
+        }
+      }
+      proj.forEach(function (pp) {
+        var rr = (1.7 + pp.depth * 1.8) * pp.pulse, al = 0.32 + pp.depth * 0.68;
+        var halo = ctx.createRadialGradient(pp.sx, pp.sy, 0, pp.sx, pp.sy, rr * 4);
+        halo.addColorStop(0, 'rgba(' + ACCENT[0] + ',' + ACCENT[1] + ',' + ACCENT[2] + ',' + (al * 0.3) + ')');
+        halo.addColorStop(1, 'rgba(' + ACCENT[0] + ',' + ACCENT[1] + ',' + ACCENT[2] + ',0)');
+        ctx.beginPath(); ctx.arc(pp.sx, pp.sy, rr * 4, 0, Math.PI * 2); ctx.fillStyle = halo; ctx.fill();
+        ctx.beginPath(); ctx.arc(pp.sx, pp.sy, rr, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + ACCENT[0] + ',' + ACCENT[1] + ',' + ACCENT[2] + ',' + al + ')'; ctx.fill();
+      });
+    }
+
+    function loop(ts) { drawFrame(ts); if (visible && !reduced) raf = requestAnimationFrame(loop); }
+    function start() { if (!raf && !reduced) raf = requestAnimationFrame(loop); }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    build();
+    // One frame immediately (covers reduced-motion: a static orb).
+    requestAnimationFrame(function (ts) { drawFrame(ts); if (!reduced && visible) start(); });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { visible = e.isIntersecting; if (visible) start(); else stop(); });
+      }, { threshold: 0.01 }).observe(canvas);
+    }
+    var rt;
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 160); });
+  }
+
+  function initOrbs() {
+    var list = document.querySelectorAll('canvas.ai-orb');
+    Array.prototype.forEach.call(list, function (c) {
+      if (c._orb) return; c._orb = true; initOrb(c);
+    });
+  }
+
   /* ── RENDER ── */
   function renderWork(category) {
     var grid = document.getElementById('work-grid');
     if (!grid) return;
     var items = PROJECTS.filter(function (p) { return p.category === category; });
     grid.innerHTML = items.map(cardHTML).join('');
+    initOrbs();
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.work-card'));
 
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

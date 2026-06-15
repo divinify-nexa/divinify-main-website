@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="work.css">
+  <link rel="stylesheet" href="automation.css">
 </head>
 <body data-work-category="ai">
 
@@ -55,6 +56,55 @@
   <!-- ─── PROJECT GRID ─── -->
   <section id="work-grid-section">
     <div class="work-grid" id="work-grid" aria-label="AI & automation projects"></div>
+  </section>
+
+  <!-- ─── AUTOMATION VISUAL ─── -->
+  <section id="automation" style="padding-top:0; padding-bottom:120px;">
+    <div style="text-align:center; margin-bottom:36px;" class="reveal">
+      <span class="section-tag">See it in action</span>
+      <h2 class="section-h2">Automation you can actually feel.</h2>
+      <p style="font-size:15px; color:var(--sub); max-width:420px; margin:12px auto 0; line-height:1.7;">
+        Explore a preset workflow or see the building blocks behind a fully custom build.
+      </p>
+    </div>
+    <div class="reveal reveal-d1">
+      <div class="auto-switcher-row" id="autoSwitcher">
+        <button class="auto-uc-btn active" data-case="0">Lead Pipeline</button>
+        <button class="auto-uc-btn" data-case="1">Recruiting</button>
+        <button class="auto-uc-btn" data-case="2">CRM Sync</button>
+        <button class="auto-uc-btn custom-tab" data-case="3">Custom Build</button>
+      </div>
+      <div>
+        <div class="auto-name-row">
+          <div class="auto-name-dot"></div>
+          <span class="auto-name-label" id="autoNameLabel">
+            <span>Lead Pipeline</span> — Inbound to Booked Call
+          </span>
+        </div>
+        <div class="auto-flow-canvas" id="autoFlowCanvas">
+          <svg class="auto-flow-svg" id="autoFlowSvg"></svg>
+          <div class="auto-custom-center" id="autoCustomCenter">
+            <div class="auto-custom-center-ring">
+              <span class="auto-custom-center-icon">⚡</span>
+            </div>
+            <span class="auto-custom-center-label">Your System</span>
+          </div>
+          <div class="auto-detail-panel" id="autoDetailPanel">
+            <span class="auto-detail-tag" id="autoDetailTag"></span>
+            <div class="auto-detail-title" id="autoDetailTitle"></div>
+            <div class="auto-detail-body" id="autoDetailBody"></div>
+          </div>
+        </div>
+      </div>
+      <div class="auto-controls" id="autoControls">
+        <button class="auto-btn-run" id="autoBtnRun">▶ Run Automation</button>
+        <button class="auto-btn-reset" id="autoBtnReset">Reset</button>
+      </div>
+      <div class="auto-status-bar">
+        <div class="auto-status-dot" id="autoStatusDot"></div>
+        <span class="auto-status-text" id="autoStatusText">Click any node to explore — or run the full sequence</span>
+      </div>
+    </div>
   </section>
 
   <!-- ─── BOTTOM CTA ─── -->
@@ -109,5 +159,6 @@
 
   <script src="projects-data.js"></script>
   <script src="work.js"></script>
+  <script src="automation.js"></script>
 </body>
 </html>
