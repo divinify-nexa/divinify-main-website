@@ -55,10 +55,12 @@
   }
 
   // Real thumbnail with an optional play overlay (video projects).
+  // `thumbLogo` renders a centered, contained wordmark instead of a cover photo.
   function imageVisual(p, withPlay) {
-    return '<div class="card-visual card-visual--photo">' +
+    var logo = p.thumbLogo;
+    return '<div class="card-visual card-visual--photo' + (logo ? ' card-visual--logo' : '') + '">' +
       '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" decoding="async">' +
-      '<span class="visual-shade" aria-hidden="true"></span>' +
+      (logo ? '' : '<span class="visual-shade" aria-hidden="true"></span>') +
       (withPlay
         ? '<span class="play-btn"><svg viewBox="0 0 24 24" fill="#f5c842" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>'
         : '') +

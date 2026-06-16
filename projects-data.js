@@ -13,6 +13,7 @@ window.PROJECTS = [
     slug: 'zerva-ats', name: 'Zerva ATS', category: 'software', tag: 'Software & Web',
     description: 'Multi-tenant applicant tracking system for high-volume sales hiring, built on Next.js + Supabase with AI résumé scoring, a visual pipeline, and real-time analytics.',
     stat: 'Every hiring pipeline in one dashboard', action: 'case',
+    image: './Assets/zerva-wordmark-light.png', thumbLogo: true,
 
     /* ── Walkthrough case study ── */
     layout: 'walkthrough',
