@@ -11,8 +11,64 @@ window.PROJECTS = [
   /* ── Software & Web ── */
   {
     slug: 'zerva-ats', name: 'Zerva ATS', category: 'software', tag: 'Software & Web',
-    description: 'Multi-tenant applicant tracking system for D2D sales networks, built on Next.js + Supabase with role-based access and visual pipeline management.',
-    stat: 'Every hiring pipeline in one dashboard', action: 'case'
+    description: 'Multi-tenant applicant tracking system for high-volume sales hiring, built on Next.js + Supabase with AI résumé scoring, a visual pipeline, and real-time analytics.',
+    stat: 'Every hiring pipeline in one dashboard', action: 'case',
+
+    /* ── Walkthrough case study ── */
+    layout: 'walkthrough',
+    page: 'zerva-ats', href: 'zerva-ats.html',
+    liveUrl: 'https://zerva-core.vercel.app/dashboard',
+    tagline: 'AI-assisted applicant tracking, application to onboarded hire',
+    summary: 'A production-grade recruitment operations platform that takes candidates from first application to onboarded team member — with AI résumé scoring, a stage-based pipeline, scheduling, outreach, and analytics in one workspace.',
+    overview: [
+      "Zerva is a recruitment operations platform built for high-volume, sales-style hiring. It gives a recruiting team one place to source, score, interview, and hire candidates — then promote the best of them straight onto a sales team.",
+      "It's a real SaaS product, not a clickable mockup: a live Postgres backend with authentication, row-level security, real email delivery, and Anthropic's Claude scoring every résumé against each workspace's own hiring criteria. Every workspace's data is fully isolated and secure."
+    ],
+    metrics: [
+      { value: '0–100', label: 'AI fit score per résumé' },
+      { value: '5-stage', label: 'Source-to-hire pipeline' },
+      { value: 'Multi-tenant', label: 'Isolated, secure workspaces' },
+      { value: 'Real-time', label: 'Sync across every view' }
+    ],
+    stack: [
+      'Next.js (App Router)', 'React 19', 'Tailwind CSS', 'Radix UI',
+      'Supabase · Postgres', 'Row-level security', 'Anthropic Claude (Opus)',
+      'Resend email', 'Bespoke SVG charts', 'Vercel'
+    ],
+    /* Each feature renders a browser mockup. Drop a screenshot path into
+       `image` (e.g. './Assets/zerva-dashboard.png') to swap the schematic. */
+    features: [
+      {
+        shot: 'dashboard', path: '/dashboard', tag: 'Command center', title: 'Executive dashboard', image: '',
+        desc: 'A real-time command center: the hiring funnel in three switchable views (animated ribbon, bar chart, or kanban), upcoming interviews for the next 14 days, and a smart "Recommended Next Actions" list that surfaces no-shows, unlogged outcomes, and candidates ready to advance.'
+      },
+      {
+        shot: 'pipeline', path: '/pipeline', tag: 'Workflow', title: 'Stage-based pipeline', image: '',
+        desc: 'Candidates flow through New Applicant → First Round → Second Round → Hire, with a separate Unresponsive track so cold candidates never clog the active pipeline. Each stage is its own purpose-built workspace, and recruiters can move, reject, or update candidates individually or in bulk.'
+      },
+      {
+        shot: 'scoring', path: '/candidates', tag: 'AI', title: 'AI résumé scoring', image: '',
+        desc: 'The standout feature. Upload a résumé and Claude scores it 0–100 against the workspace’s custom criteria — relevant experience, competitive drive, team orientation, and more — each weighted by importance, with a written summary. Recruiters spot strong candidates instantly instead of reading every résumé cold.'
+      },
+      {
+        shot: 'calendar', path: '/calendar', tag: 'Scheduling', title: 'Interview calendar', image: '',
+        desc: 'A full month / week / list calendar for booking and tracking interviews. Assign each one to a specific rep, log color-coded outcomes (scheduled, no-show, accepted, rejected), and track first and second rounds independently — all syncing instantly back to the dashboard.'
+      },
+      {
+        shot: 'messaging', path: '/messages', tag: 'Outreach', title: 'Email & SMS outreach', image: '',
+        desc: 'Email and SMS templates with auto-filled placeholders, a compose modal launched from any candidate row, and real delivery via Resend — including a self-serve flow to connect and verify a custom sending domain. Every message logs to the candidate’s activity timeline.'
+      },
+      {
+        shot: 'analytics', path: '/reports', tag: 'Reporting', title: 'Reporting & analytics', image: '',
+        desc: 'A reporting suite powered by bespoke, dependency-free SVG charts: hire rate, offer-to-hire, no-show and rejection rates — each with a click-through explanation — plus headcount by stage, intake trends, a best-sources leaderboard, and messaging analytics by channel.'
+      }
+    ],
+    more: [
+      { title: 'Team & HR management', desc: 'Manage reps with active / former states, see assignment counts, and promote a hire straight onto the roster.' },
+      { title: 'Workspace branding', desc: 'Tabbed settings for company info, logo + accent color, and scoring config — with logos that recolor for light and dark themes.' },
+      { title: 'AI cost controls', desc: 'A platform dashboard tracks AI usage and spend per workspace, with hard monthly ceilings so costs never run away.' },
+      { title: 'Bulk actions & export', desc: 'Select many candidates to move, reject, or export at once; CSV and PDF export with configurable columns.' }
+    ]
   },
   {
     slug: 'recruiter-portal-system', name: 'Recruiter Portal System', category: 'software', tag: 'Software & Web',

@@ -19,8 +19,19 @@
       .replace(/"/g, '&quot;');
   }
 
+  /* ── Work categories (back link + nav highlight) ── */
+  var WORK = {
+    software: { page: 'work-software.html', label: 'Software &amp; Web Development', back: 'Software & Web', tagLabel: 'Software & Web' },
+    ai:       { page: 'work-ai.html',       label: 'AI &amp; Automation',           back: 'AI & Automation', tagLabel: 'AI & Automation' },
+    video:    { page: 'work-video.html',    label: 'Video Production',               back: 'Video Work',      tagLabel: 'Video Production' }
+  };
+
   /* ── Shared chrome ── */
-  function navHTML() {
+  function navHTML(cat) {
+    cat = WORK[cat] ? cat : 'video';
+    function sub(key, page, label) {
+      return '<a href="' + page + '"' + (key === cat ? ' class="active"' : '') + '>' + label + '</a>';
+    }
     return '' +
       '<nav id="mainNav">' +
         '<a href="index.html" class="nav-logo"><img src="./Assets/divinify-logo-white.png" alt="Divinify"></a>' +
@@ -33,9 +44,9 @@
                 '<svg class="nav-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' +
               '</button>' +
               '<div class="nav-dropdown-menu">' +
-                '<a href="work-software.html">Software &amp; Web Development</a>' +
-                '<a href="work-ai.html">AI &amp; Automation</a>' +
-                '<a href="work-video.html" class="active">Video Production</a>' +
+                sub('software', 'work-software.html', 'Software &amp; Web Development') +
+                sub('ai', 'work-ai.html', 'AI &amp; Automation') +
+                sub('video', 'work-video.html', 'Video Production') +
               '</div>' +
             '</li>' +
             '<li><a href="index.html#why">Why Us</a></li>' +
@@ -156,6 +167,228 @@
       '</main>';
   }
 
+  /* ───────────────────────────────────────────────
+     Walkthrough layout (software / web case studies)
+  ─────────────────────────────────────────────── */
+
+  // Interface schematics — stand-ins until real screenshots are dropped
+  // into each feature's `image`. Drawn dark-on-dark with accent highlights.
+  var ACC = '#f5c842';
+  function rect(x, y, w, h, r, fill, stroke) {
+    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) +
+      '" fill="' + (fill || 'none') + '"' + (stroke ? ' stroke="' + stroke + '"' : '') + '/>';
+  }
+  var PANEL = 'rgba(255,255,255,0.045)', LINE = 'rgba(255,255,255,0.10)', INK = 'rgba(238,238,240,0.22)', INK2 = 'rgba(238,238,240,0.40)';
+  function bars(x, y, vals, bw, gap, base, color) {
+    return vals.map(function (v, i) {
+      var h = v, bx = x + i * (bw + gap);
+      return rect(bx, base - h, bw, h, 2, color || INK);
+    }).join('');
+  }
+  function lines(x, y, w, n, gap, op) {
+    var s = '';
+    for (var i = 0; i < n; i++) s += rect(x, y + i * gap, (i === n - 1 ? w * 0.6 : w), 5, 2.5, op || INK);
+    return s;
+  }
+  function svgWrap(inner) {
+    return '<svg class="pd-schematic" viewBox="0 0 720 440" preserveAspectRatio="xMidYMid meet" role="img" aria-hidden="true">' +
+      rect(0, 0, 720, 440, 0, 'transparent') + inner + '</svg>';
+  }
+
+  var SHOTS = {
+    dashboard: function () {
+      var kpis = '';
+      [40, 250, 460].forEach(function (x, i) {
+        kpis += rect(x, 28, 200, 78, 12, PANEL, LINE) +
+          rect(x + 18, 46, 70, 7, 3, INK) +
+          rect(x + 18, 64, 96, 16, 4, i === 0 ? ACC : INK2);
+      });
+      // ribbon funnel
+      var funnel = '';
+      var ws = [320, 250, 180, 110], fy = 150;
+      ws.forEach(function (w, i) {
+        funnel += rect(40 + (320 - w) / 2, fy + i * 30, w, 20, 4, i === 0 ? ACC : 'rgba(245,200,66,' + (0.5 - i * 0.1) + ')');
+      });
+      var sidebar = rect(400, 140, 280, 270, 12, PANEL, LINE) + rect(420, 162, 120, 8, 3, INK2) +
+        lines(420, 188, 240, 6, 34, INK);
+      return svgWrap(kpis + rect(40, 132, 320, 158, 12, PANEL, LINE) + funnel + sidebar);
+    },
+    pipeline: function () {
+      var cols = ['New', 'First', 'Second', 'Hire'], out = '';
+      cols.forEach(function (c, i) {
+        var x = 28 + i * 170;
+        out += rect(x, 28, 150, 384, 12, PANEL, LINE);
+        out += rect(x + 16, 46, 70, 9, 4, i === 3 ? ACC : INK2);
+        for (var k = 0; k < 3 - (i === 3 ? 1 : 0); k++) {
+          out += rect(x + 14, 74 + k * 86, 122, 72, 8, 'rgba(255,255,255,0.03)', LINE) +
+            rect(x + 26, 92 + k * 86, 60, 7, 3, INK2) +
+            rect(x + 26, 108 + k * 86, 92, 5, 2.5, INK) +
+            rect(x + 26, 124 + k * 86, 30, 12, 6, i === 3 ? 'rgba(245,200,66,0.5)' : INK);
+        }
+      });
+      return svgWrap(out);
+    },
+    scoring: function () {
+      // gauge
+      var cx = 190, cy = 210, r = 110;
+      var gauge = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + LINE + '" stroke-width="16"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + ACC + '" stroke-width="16" stroke-linecap="round" stroke-dasharray="' + (2 * Math.PI * r) + '" stroke-dashoffset="' + (2 * Math.PI * r * 0.17) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>' +
+        '<text x="' + cx + '" y="' + (cy + 6) + '" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="56" font-weight="300" fill="#eeeef0">87</text>' +
+        '<text x="' + cx + '" y="' + (cy + 40) + '" text-anchor="middle" font-family="DM Mono, monospace" font-size="13" fill="' + INK2 + '" letter-spacing="2">FIT SCORE</text>';
+      var crit = rect(380, 60, 312, 320, 12, PANEL, LINE);
+      var rows = ['Experience', 'Drive', 'Team fit', 'Growth', 'Résumé'];
+      var vals = [0.9, 0.75, 0.85, 0.6, 0.8];
+      rows.forEach(function (_, i) {
+        var y = 96 + i * 56;
+        crit += rect(404, y, 90, 7, 3, INK2) +
+          rect(404, y + 16, 264, 8, 4, LINE) +
+          rect(404, y + 16, 264 * vals[i], 8, 4, ACC);
+      });
+      return svgWrap(gauge + crit);
+    },
+    calendar: function () {
+      var grid = rect(40, 28, 640, 384, 12, PANEL, LINE);
+      var heads = '';
+      for (var d = 0; d < 7; d++) heads += rect(70 + d * 86, 48, 40, 7, 3, INK2);
+      var cells = '', events = { 3: 1, 9: 1, 12: 1, 16: 1, 23: 1, 25: 1 };
+      for (var i = 0; i < 28; i++) {
+        var col = i % 7, row = Math.floor(i / 7);
+        var x = 60 + col * 86, y = 76 + row * 80;
+        cells += rect(x, y, 70, 66, 8, 'rgba(255,255,255,0.02)', LINE) + rect(x + 10, y + 10, 16, 6, 3, INK);
+        if (events[i]) cells += rect(x + 10, y + 30, 50, 14, 4, i % 3 ? 'rgba(245,200,66,0.55)' : INK2);
+      }
+      return svgWrap(grid + heads + cells);
+    },
+    messaging: function () {
+      var win = rect(120, 40, 480, 360, 14, PANEL, LINE);
+      var head = rect(120, 40, 480, 56, 14, 'rgba(255,255,255,0.03)') + rect(146, 62, 140, 10, 4, INK2);
+      var toField = rect(146, 118, 428, 34, 8, 'rgba(255,255,255,0.03)', LINE) + rect(166, 130, 120, 8, 4, INK);
+      var chip = rect(146, 166, 110, 24, 12, 'rgba(245,200,66,0.16)', 'rgba(245,200,66,0.4)') + rect(162, 174, 70, 7, 3, ACC);
+      var body = lines(146, 210, 428, 5, 26, INK);
+      var send = rect(474, 346, 100, 34, 8, ACC) + rect(500, 358, 48, 9, 4, '#0b0b0b');
+      return svgWrap(win + head + toField + chip + body + send);
+    },
+    analytics: function () {
+      var card1 = rect(40, 40, 360, 360, 12, PANEL, LINE) + rect(64, 64, 120, 8, 4, INK2);
+      var chart = bars(72, 0, [120, 180, 90, 210, 150, 240, 130], 30, 16, 360, INK);
+      chart += bars(72, 0, [0, 0, 0, 0, 0, 240, 0], 30, 16, 360, ACC); // highlight peak
+      var card2 = rect(420, 40, 260, 170, 12, PANEL, LINE) + rect(444, 64, 90, 8, 4, INK2) +
+        '<polyline points="444,180 484,150 524,162 564,120 604,134 644,96" fill="none" stroke="' + ACC + '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
+      var card3 = rect(420, 230, 260, 170, 12, PANEL, LINE) + rect(444, 254, 90, 8, 4, INK2) + lines(444, 286, 212, 4, 26, INK);
+      return svgWrap(card1 + chart + card2 + card3);
+    }
+  };
+
+  function browserHTML(host, feature) {
+    var screen = feature.image
+      ? '<img src="' + esc(feature.image) + '" alt="' + esc(feature.title) + '" loading="lazy" decoding="async">'
+      : (SHOTS[feature.shot] || SHOTS.dashboard)();
+    return '<div class="pd-browser">' +
+      '<div class="pd-browser-bar">' +
+        '<span class="pd-dot"></span><span class="pd-dot"></span><span class="pd-dot"></span>' +
+        '<span class="pd-browser-url">' + esc(host) + esc(feature.path || '') + '</span>' +
+      '</div>' +
+      '<div class="pd-browser-screen">' + screen + '</div>' +
+    '</div>';
+  }
+
+  function walkthroughHTML(p) {
+    var w = WORK[p.category] || WORK.software;
+    var host = (p.liveUrl || '').replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+
+    var overview = (p.overview || []).map(function (para) {
+      return '<p>' + esc(para) + '</p>';
+    }).join('');
+
+    var metrics = (p.metrics && p.metrics.length)
+      ? '<div class="pd-metrics reveal">' + p.metrics.map(function (m) {
+          return '<div class="pd-metric"><div class="pd-metric-val">' + esc(m.value) + '</div>' +
+            '<div class="pd-metric-label">' + esc(m.label) + '</div></div>';
+        }).join('') + '</div>'
+      : '';
+
+    // Interactive tour: clickable tabs on the left switch the mockup on the right.
+    var features = p.features || [];
+    var tabs = features.map(function (f, i) {
+      return '<button class="pd-tour-tab' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '" role="tab" aria-selected="' + (i === 0 ? 'true' : 'false') + '">' +
+        '<span class="pd-tour-num">' + (i + 1 < 10 ? '0' + (i + 1) : (i + 1)) + '</span>' +
+        '<span class="pd-tour-tab-main">' +
+          '<span class="pd-tour-tag">' + esc(f.tag) + '</span>' +
+          '<span class="pd-tour-name">' + esc(f.title) + '</span>' +
+          '<span class="pd-tour-desc">' + esc(f.desc) + '</span>' +
+        '</span>' +
+      '</button>';
+    }).join('');
+    var shots = features.map(function (f, i) {
+      return '<figure class="pd-shot' + (i === 0 ? ' is-active' : '') + '" data-i="' + i + '">' + browserHTML(host, f) + '</figure>';
+    }).join('');
+
+    var tour = features.length
+      ? '<section class="pd-tour reveal" id="pdTour">' +
+          '<div class="pd-wrap">' +
+            '<div class="pd-tour-head">' +
+              '<span class="section-tag">Inside the product</span>' +
+              '<h2 class="pd-h2">A guided tour</h2>' +
+            '</div>' +
+            '<div class="pd-tour-grid">' +
+              '<div class="pd-tour-nav" role="tablist" aria-label="Product features">' + tabs + '</div>' +
+              '<div class="pd-tour-stage">' + shots + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</section>'
+      : '';
+
+    var more = (p.more && p.more.length)
+      ? '<section class="pd-wrap pd-more reveal">' +
+          '<span class="section-tag">Also built in</span>' +
+          '<div class="pd-more-grid">' + p.more.map(function (m) {
+            return '<div class="pd-more-item"><h3>' + esc(m.title) + '</h3><p>' + esc(m.desc) + '</p></div>';
+          }).join('') + '</div>' +
+        '</section>'
+      : '';
+
+    var stack = (p.stack && p.stack.length)
+      ? '<section class="pd-wrap pd-stack-sec reveal">' +
+          '<span class="section-tag">Built with</span>' +
+          '<div class="pd-stack">' + p.stack.map(function (s) {
+            return '<span class="pd-chip">' + esc(s) + '</span>';
+          }).join('') + '</div>' +
+        '</section>'
+      : '';
+
+    var live = p.liveUrl
+      ? '<a class="btn-primary pd-live" href="' + esc(p.liveUrl) + '" target="_blank" rel="noopener">Explore the live product ' + ARROW + '</a>'
+      : '';
+
+    return '' +
+      '<main>' +
+        '<div class="pd-wrap pd-top">' +
+          '<a class="pd-back" href="' + w.page + '">' + ARROW_LEFT + ' ' + w.back + '</a>' +
+        '</div>' +
+        '<section class="pd-hero">' +
+          '<div class="pd-hero-glow" aria-hidden="true"></div>' +
+          '<div class="pd-wrap">' +
+            '<div class="pd-hero-inner reveal">' +
+              '<span class="section-tag">' + esc(w.tagLabel) + '</span>' +
+              '<h1 class="pd-title">' + esc(p.name) + '</h1>' +
+              '<div class="pd-tagline">' + esc(p.tagline || '') + '</div>' +
+              (p.summary ? '<p class="pd-lede">' + esc(p.summary) + '</p>' : '') +
+              live +
+            '</div>' +
+          '</div>' +
+        '</section>' +
+        metrics +
+        '<section class="pd-wrap pd-overview reveal">' +
+          '<span class="section-tag">Overview</span>' + overview +
+        '</section>' +
+        tour +
+        more +
+        stack +
+        '<div class="pd-foot-space"></div>' +
+        ctaHTML() +
+      '</main>';
+  }
+
   function ctaHTML() {
     return '' +
       '<section id="work-cta">' +
@@ -250,13 +483,38 @@
     });
   }
 
+  // Interactive feature tour — clicking a tab cross-fades to its mockup.
+  function initWalkthrough() {
+    var tour = document.getElementById('pdTour');
+    if (!tour) return;
+    var tabs = [].slice.call(tour.querySelectorAll('.pd-tour-tab'));
+    var shots = [].slice.call(tour.querySelectorAll('.pd-shot'));
+    function activate(i) {
+      tabs.forEach(function (t, k) {
+        var on = k === i;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      shots.forEach(function (s, k) { s.classList.toggle('is-active', k === i); });
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { activate(i); });
+      t.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); (tabs[i + 1] || tabs[0]).focus(); (tabs[i + 1] || tabs[0]).click(); }
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); (tabs[i - 1] || tabs[tabs.length - 1]).focus(); (tabs[i - 1] || tabs[tabs.length - 1]).click(); }
+      });
+    });
+  }
+
   function init() {
     var slug = document.body.getAttribute('data-project');
     var p = PROJECTS.filter(function (x) { return x.slug === slug; })[0];
 
-    document.body.insertAdjacentHTML('afterbegin', navHTML());
+    document.body.insertAdjacentHTML('afterbegin', navHTML(p && p.category));
     var main = document.createElement('div');
-    main.innerHTML = p ? bodyHTML(p) : notFoundHTML(slug);
+    main.innerHTML = p
+      ? (p.layout === 'walkthrough' ? walkthroughHTML(p) : bodyHTML(p))
+      : notFoundHTML(slug);
     while (main.firstChild) document.body.appendChild(main.firstChild);
     document.body.insertAdjacentHTML('beforeend', footerHTML());
 
@@ -265,6 +523,7 @@
     initNav();
     initReveal();
     initVideoEmbed();
+    initWalkthrough();
   }
 
   if (document.readyState === 'loading') {
