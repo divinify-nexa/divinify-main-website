@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="work.css">
+  <link rel="stylesheet" href="work.css?v=7">
 </head>
 <body data-work-category="software">
 
@@ -54,6 +54,13 @@
 
   <!-- ─── PROJECT GRID ─── -->
   <section id="work-grid-section">
+    <div class="work-filter-wrap reveal">
+      <div class="work-filter" id="work-filter" role="tablist" aria-label="Filter projects">
+        <button class="work-filter-btn is-active" type="button" role="tab" aria-selected="true" data-filter="all">All</button>
+        <button class="work-filter-btn" type="button" role="tab" aria-selected="false" data-filter="website">Website Development</button>
+        <button class="work-filter-btn" type="button" role="tab" aria-selected="false" data-filter="software">Software</button>
+      </div>
+    </div>
     <div class="work-grid" id="work-grid" aria-label="Software & web projects"></div>
   </section>
 
@@ -107,7 +114,7 @@
     </div>
   </footer>
 
-  <script src="projects-data.js"></script>
-  <script src="work.js"></script>
+  <script src="projects-data.js?v=7"></script>
+  <script src="work.js?v=7"></script>
 </body>
 </html>

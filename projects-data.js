@@ -10,10 +10,10 @@
 window.PROJECTS = [
   /* ── Software & Web ── */
   {
-    slug: 'zerva-ats', name: 'Zerva ATS', category: 'software', tag: 'Software & Web',
+    slug: 'zerva-ats', name: 'Zerva ATS', category: 'software', tag: 'Software',
     description: 'Multi-tenant applicant tracking system for high-volume sales hiring, built on Next.js + Supabase with AI résumé scoring, a visual pipeline, and real-time analytics.',
     stat: 'Every hiring pipeline in one dashboard', action: 'case',
-    image: './Assets/zerva-wordmark-light.png', thumbLogo: true,
+    image: './Assets/zerva-wordmark-light.png', thumbLogo: true, thumbTheme: 'indigo',
 
     /* ── Walkthrough case study ── */
     layout: 'walkthrough',
@@ -36,32 +36,48 @@ window.PROJECTS = [
       'Supabase · Postgres', 'Row-level security', 'Anthropic Claude (Opus)',
       'Resend email', 'Bespoke SVG charts', 'Vercel'
     ],
-    /* Each feature renders a browser mockup. Drop a screenshot path into
-       `image` (e.g. './Assets/zerva-dashboard.png') to swap the schematic. */
+    /* Each feature renders a browser mockup. `image` points to a real screenshot
+       under ./Assets/zerva/; until that file exists the SVG schematic shows. */
     features: [
       {
-        shot: 'dashboard', path: '/dashboard', tag: 'Command center', title: 'Executive dashboard', image: '',
-        desc: 'A real-time command center: the hiring funnel in three switchable views (animated ribbon, bar chart, or kanban), upcoming interviews for the next 14 days, and a smart "Recommended Next Actions" list that surfaces no-shows, unlogged outcomes, and candidates ready to advance.'
+        shot: 'dashboard', path: '/dashboard', tag: 'Command center', title: 'Executive dashboard',
+        image: './Assets/zerva/dashboard.jpg',
+        desc: 'A real-time command center: interview bookings split by round, the hiring funnel in three switchable views (ribbon, bars, or board), upcoming events, and a smart "Recommended Next Actions" list that surfaces no-shows, unlogged outcomes, and the biggest bottleneck.'
       },
       {
-        shot: 'pipeline', path: '/pipeline', tag: 'Workflow', title: 'Stage-based pipeline', image: '',
-        desc: 'Candidates flow through New Applicant → First Round → Second Round → Hire, with a separate Unresponsive track so cold candidates never clog the active pipeline. Each stage is its own purpose-built workspace, and recruiters can move, reject, or update candidates individually or in bulk.'
+        shot: 'pipeline', path: '/applicants', tag: 'Intake', title: 'New applicants',
+        image: './Assets/zerva/applicants.jpg',
+        desc: 'Every incoming application in one sortable table — source, date applied, AI score, and status — with one-tap call, email, and SMS actions and loop tracking, so no candidate slips through. Candidates flow on through First Round → Second Round → Hire, with a separate Unresponsive track.'
       },
       {
-        shot: 'scoring', path: '/candidates', tag: 'AI', title: 'AI résumé scoring', image: '',
-        desc: 'The standout feature. Upload a résumé and Claude scores it 0–100 against the workspace’s custom criteria — relevant experience, competitive drive, team orientation, and more — each weighted by importance, with a written summary. Recruiters spot strong candidates instantly instead of reading every résumé cold.'
+        shot: 'calendar', path: '/calendar', tag: 'Scheduling', title: 'Interview calendar',
+        image: './Assets/zerva/calendar.jpg',
+        desc: 'A full month / week / list calendar of every scheduled interview across funnels, color-coded by round and outcome and synced with the pipeline — so the whole team sees the same source of truth.'
       },
       {
-        shot: 'calendar', path: '/calendar', tag: 'Scheduling', title: 'Interview calendar', image: '',
-        desc: 'A full month / week / list calendar for booking and tracking interviews. Assign each one to a specific rep, log color-coded outcomes (scheduled, no-show, accepted, rejected), and track first and second rounds independently — all syncing instantly back to the dashboard.'
+        shot: 'calendar', path: '/schedule', tag: 'Booking', title: 'Schedule & assign',
+        image: './Assets/zerva/schedule.jpg', fit: 'contain',
+        desc: 'Book an interview in seconds: pick the round, then the date, time, and assignee from one focused modal that writes straight to the calendar — first and second rounds tracked independently.'
       },
       {
-        shot: 'messaging', path: '/messages', tag: 'Outreach', title: 'Email & SMS outreach', image: '',
-        desc: 'Email and SMS templates with auto-filled placeholders, a compose modal launched from any candidate row, and real delivery via Resend — including a self-serve flow to connect and verify a custom sending domain. Every message logs to the candidate’s activity timeline.'
+        shot: 'analytics', path: '/reports', tag: 'Reporting', title: 'Recruitment report',
+        image: './Assets/zerva/reporting.jpg',
+        desc: 'A full view of the hiring flow: applicants over time, outcome mix, pipeline-by-stage conversion, interview activity, and exactly where candidates drop out — all from bespoke, dependency-free charts.'
       },
       {
-        shot: 'analytics', path: '/reports', tag: 'Reporting', title: 'Reporting & analytics', image: '',
-        desc: 'A reporting suite powered by bespoke, dependency-free SVG charts: hire rate, offer-to-hire, no-show and rejection rates — each with a click-through explanation — plus headcount by stage, intake trends, a best-sources leaderboard, and messaging analytics by channel.'
+        shot: 'messaging', path: '/reports/messaging', tag: 'Outreach', title: 'Messaging report',
+        image: './Assets/zerva/messaging.jpg',
+        desc: 'Outreach volume across SMS and email, the channel split, and which saved templates are doing the work — with per-template send counts so the team doubles down on what converts.'
+      },
+      {
+        shot: 'scoring', path: '/assignments', tag: 'Team', title: 'Team assignments',
+        image: './Assets/zerva/assignments.jpg',
+        desc: 'Interview load per rep at a glance — appointments booked, reps carrying interviews, idle reps, and unassigned appointments — so coverage stays balanced and nothing falls between the cracks.'
+      },
+      {
+        shot: 'messaging', path: '/settings', tag: 'Workspace', title: 'Settings & templates',
+        image: './Assets/zerva/settings.jpg', fit: 'contain',
+        desc: 'Workspace controls for company info, branding, applicant scoring, and reusable SMS/email templates with merge fields — so every rep sends consistent, on-brand outreach from one source.'
       }
     ],
     more: [
@@ -71,15 +87,91 @@ window.PROJECTS = [
       { title: 'Bulk actions & export', desc: 'Select many candidates to move, reject, or export at once; CSV and PDF export with configurable columns.' }
     ]
   },
+
+  /* ── Website builds & refreshes ──
+     Anonymized client work. The card shows a browser-frame desktop screenshot;
+     `layout: 'web'` renders a light overview page (project.js) with the who /
+     what / why and mobile screenshots. `liveUrl` powers the "Visit live site"
+     button on that page. */
   {
-    slug: 'recruiter-portal-system', name: 'Recruiter Portal System', category: 'software', tag: 'Software & Web',
-    description: 'White-labeled recruiter portals for three sales organizations — each with custom branding, video upload, and n8n-powered automation behind the scenes.',
-    stat: '3 branded portals, one codebase', action: 'case'
+    slug: 'construction-brand-site', name: 'Construction Brand Site', category: 'software', tag: 'Web Development',
+    description: "Complete new website build for a residential and commercial construction company, designed for a premium, professional feel that positions them as a serious market competitor. Clean, credible, and expertise-forward.",
+    action: 'web', layout: 'web', page: 'construction-brand-site', href: 'construction-brand-site.html',
+    liveUrl: 'https://www.capitaldevelopmenthomes.com/',
+    screenshot: './Assets/web/web-construction.jpg', screenshotMobile: './Assets/web/web-construction-m.jpg',
+    mobileShots: ['./Assets/web/web-construction-m.jpg', './Assets/web/web-construction-m2.jpg'],
+    summary: 'A premium brand site that positions a growing builder as a serious market competitor.',
+    client: 'A residential and commercial construction company building custom homes and commercial spaces across metro Atlanta.',
+    services: ['Web Design', 'Development', 'Responsive Build', 'Copywriting', 'Brand Direction'],
+    overview: [
+      "We designed and built a brand-new website from the ground up — a clean, credible, expertise-forward presence built to make a growing builder look like an established market leader.",
+      "Confident typography, a clear service architecture, and real project imagery carry the brand, with fast, fully responsive pages and calls-to-action that route serious inquiries straight to the team."
+    ],
+    benefit: "The new site repositions the company as a premium, serious competitor — earning trust on first impression and turning more visitors into qualified project leads."
   },
   {
-    slug: 'vpr-benefits-landing', name: 'VPR Benefits Landing', category: 'software', tag: 'Software & Web',
-    description: 'Marketing landing page with GA4 tracking, Supabase telemetry, and Twilio call tracking for a Georgia real estate brokerage.',
-    stat: 'Full-funnel call + event attribution', action: 'case'
+    slug: 'roofing-brand-site', name: 'Roofing Brand Site', category: 'software', tag: 'Web Development',
+    description: "Complete new website build for a residential and commercial roofing company, built with an edgy, sleek aesthetic that commands authority in a competitive market. Sleek, modern, and professional.",
+    action: 'web', layout: 'web', page: 'roofing-brand-site', href: 'roofing-brand-site.html',
+    liveUrl: 'https://www.elevatedsolutionsrd.com/',
+    screenshot: './Assets/web/web-roofing.jpg', screenshotMobile: './Assets/web/web-roofing-m.jpg',
+    mobileShots: ['./Assets/web/web-roofing-m.jpg', './Assets/web/web-roofing-m2.jpg'],
+    summary: 'An edgy, authority-commanding presence for a competitive roofing market.',
+    client: 'A residential and commercial roofing company serving metro Atlanta and all of Georgia.',
+    services: ['Web Design', 'Development', 'Responsive Build', 'Motion', 'Lead Capture'],
+    overview: [
+      "A complete new-build website with an edgy, sleek aesthetic engineered to command authority in a crowded roofing market.",
+      "Bold dark UI, sharp motion, and a confident layout separate the brand from the templated competition, while quote and contact flows are surfaced at every scroll depth."
+    ],
+    benefit: "The site gives the company a premium, authoritative presence that justifies higher-value work and drives more quote requests from the homeowners and businesses they want."
+  },
+  {
+    slug: 'direct-sales-recruiting-site', name: 'Direct Sales Recruiting Site', category: 'software', tag: 'Web Development',
+    description: "Full website refresh for a direct sales organization, designed with an earthy, warm tone that reflects the team's culture and builds trust with recruits. Personal, warm, and professional.",
+    action: 'web', layout: 'web', page: 'direct-sales-recruiting-site', href: 'direct-sales-recruiting-site.html',
+    liveUrl: 'https://www.horizonsalesolutions.com/',
+    screenshot: './Assets/web/web-sales-1.jpg', screenshotMobile: './Assets/web/web-sales-1-m.jpg',
+    mobileShots: ['./Assets/web/web-sales-1-m.jpg', './Assets/web/web-sales-1-m2.jpg'],
+    summary: 'A warm, people-first refresh that builds trust with recruits.',
+    client: 'A direct sales organization focused on recruiting and developing the next generation of entrepreneurs.',
+    services: ['Web Design', 'Refresh', 'Responsive Build', 'Copywriting', 'Recruiting UX'],
+    overview: [
+      "A full website refresh built around an earthy, warm tone that mirrors the team's culture.",
+      "Approachable typography, soft gradients, and people-first copy make the brand feel personal and trustworthy, with clear recruiting pathways guiding prospects toward joining."
+    ],
+    benefit: "The warmer, more human presence builds immediate trust with recruits — making the organization feel like a place people want to belong, and lifting recruiting conversions."
+  },
+  {
+    slug: 'sales-team-site-refresh', name: 'Sales Team Site Refresh', category: 'software', tag: 'Web Development',
+    description: "Full website refresh for a high-performing direct sales team, built to feel inviting and polished while balancing personality with professionalism. Sleek, inviting, and modern.",
+    action: 'web', layout: 'web', page: 'sales-team-site-refresh', href: 'sales-team-site-refresh.html',
+    liveUrl: 'https://www.firstcoastsalesgroup.com/',
+    screenshot: './Assets/web/web-sales-2.jpg', screenshotMobile: './Assets/web/web-sales-2-m.jpg',
+    mobileShots: ['./Assets/web/web-sales-2-m.jpg', './Assets/web/web-sales-2-m2.jpg'],
+    summary: 'An inviting, polished refresh balancing personality and professionalism.',
+    client: 'A high-performing, privately owned direct sales team headquartered in Jacksonville, Florida.',
+    services: ['Web Design', 'Refresh', 'Responsive Build', 'Copywriting', 'Brand Cues'],
+    overview: [
+      "A full website refresh built to feel inviting and polished while balancing personality with professionalism.",
+      "A clean, modern layout, coastal brand cues, and clear team storytelling present the group as both approachable and serious."
+    ],
+    benefit: "The refreshed site elevates how the team is perceived — inviting enough to attract new talent, polished enough to earn client and partner confidence."
+  },
+  {
+    slug: 'sales-org-rebrand-site', name: 'Sales Org Rebrand', category: 'software', tag: 'Web Development',
+    description: "Full website refresh for a competitive direct sales company, designed with a dominant, minimal aesthetic that emphasizes team identity and performance culture. Minimal, competitive, and community-driven.",
+    action: 'web', layout: 'web', page: 'sales-org-rebrand-site', href: 'sales-org-rebrand-site.html',
+    liveUrl: 'https://w1nsalesinc.com/',
+    screenshot: './Assets/web/web-sales-3.jpg', screenshotMobile: './Assets/web/web-sales-3-m.jpg',
+    mobileShots: ['./Assets/web/web-sales-3-m.jpg', './Assets/web/web-sales-3-m2.jpg'],
+    summary: 'A dominant, minimal rebrand built around team identity and performance.',
+    client: 'A competitive direct sales company built on team identity and a performance culture.',
+    services: ['Web Design', 'Refresh', 'Responsive Build', 'Brand System', 'Performance Messaging'],
+    overview: [
+      "A full website refresh with a dominant, minimal aesthetic that puts team identity and performance front and center.",
+      "A black-and-gold system, restrained layout, and strong typographic hierarchy communicate discipline and a winning culture without clutter."
+    ],
+    benefit: "The minimal, dominant design reinforces the company's competitive identity — projecting strength and culture that attracts driven recruits and signals a team that performs."
   },
 
   /* ── AI & Automation ── */
@@ -108,7 +200,7 @@ window.PROJECTS = [
     category: 'video', tag: 'Video Production',
     tagline: 'Bold • Explosive • Driven • Performance',
     image: 'https://images.squarespace-cdn.com/content/v1/680842714352b025d2afe3ab/6ca79d52-d414-4a66-b97d-99cbd86cebd7/19.jpg?format=1500w',
-    href: 'swiftrunning.html', liveUrl: 'https://www.divinify.io/swiftrunning', video: '', action: 'watch',
+    href: 'swiftrunning.html', liveUrl: 'https://www.divinify.io/swiftrunning', video: 'https://player.vimeo.com/video/1203879793?autoplay=1', action: 'watch',
     client: 'Swift Running — performance footwear, built on one promise: Fly Free.',
     location: 'United States',
     services: ['Video Production', 'Drone', 'Editing', 'Talent Casting', 'Location Scouting', 'Voiceover', 'Scripting', 'Photography'],
@@ -125,7 +217,7 @@ window.PROJECTS = [
     category: 'video', tag: 'Video Production',
     tagline: 'Cultural • Unified • Edgy • Fashion',
     image: 'https://images.squarespace-cdn.com/content/v1/680842714352b025d2afe3ab/aa9fa90c-732f-4181-9277-a83533cf37eb/DSC04868.jpg?format=1500w',
-    href: 'soleplay.html', liveUrl: 'https://www.divinify.io/soleplay', video: '', action: 'watch',
+    href: 'soleplay.html', liveUrl: 'https://www.divinify.io/soleplay', video: 'https://player.vimeo.com/video/1203884103?autoplay=1', action: 'watch',
     client: 'Sole Play ATL — an Atlanta streetwear boutique blending exclusive footwear, gaming, and community.',
     location: 'Atlanta, Georgia',
     services: ['Video Production', 'Lighting', 'Photography', 'Editing', 'Talent Coordination', 'Location Scouting', 'Crew Sourcing', 'Conceptualization'],
@@ -142,7 +234,11 @@ window.PROJECTS = [
     category: 'video', tag: 'Video Production',
     tagline: 'Creative • Original • Trendy • Strategic',
     image: 'https://images.squarespace-cdn.com/content/v1/680842714352b025d2afe3ab/d58e3207-5109-4b76-bdc5-4ac97d26e6d9/Screenshot+2025-05-29+at+1.43.39%E2%80%AFPM.png?format=1000w',
-    href: 'transcendroofing.html', liveUrl: 'https://www.divinify.io/transcendroofing', video: '', action: 'watch',
+    href: 'transcendroofing.html', liveUrl: 'https://www.divinify.io/transcendroofing', action: 'watch',
+    videos: [
+      { url: 'https://player.vimeo.com/video/1203881587?autoplay=1', poster: 'https://vumbnail.com/1203881587.jpg', title: 'Transcend Roofing Trip Hype Recap' },
+      { url: 'https://player.vimeo.com/video/1203883374?autoplay=1', poster: 'https://vumbnail.com/1203883374.jpg', title: 'Team Meeting Recap' }
+    ],
     client: 'Transcend Roofing Systems — a faith-based roofing company serving greater Atlanta from Cumming, GA.',
     location: 'Cumming, Georgia',
     services: ['Video Production', 'Photography', 'Editing', 'Audio', 'Drone', 'Conceptualization'],
@@ -176,7 +272,7 @@ window.PROJECTS = [
     category: 'video', tag: 'Video Production',
     tagline: 'Adventurous • Bold • Hype • Passionate',
     image: 'https://images.squarespace-cdn.com/content/v1/680842714352b025d2afe3ab/78f13cc9-546f-4968-a4db-38efa6d4d297/Screenshot+2025-05-02+at+10.30.05%E2%80%AFAM.jpg?format=1500w',
-    href: 'projectvegas.html', liveUrl: 'https://www.divinify.io/projectvegas', video: '', action: 'watch',
+    href: 'projectvegas.html', liveUrl: 'https://www.divinify.io/projectvegas', video: 'https://player.vimeo.com/video/1203882556?autoplay=1', action: 'watch',
     client: 'Divinify — an in-house passion project.',
     location: 'Open desert',
     services: ['Video Production', 'Drone', 'FPV Drone', 'Photography', 'Editing', 'Location Scouting', 'Conceptualization'],
@@ -191,17 +287,21 @@ window.PROJECTS = [
   {
     slug: 'south-forsyth-1', page: 'southforsyth1', name: 'South Forsyth',
     category: 'video', tag: 'Video Production',
-    tagline: 'Hype • Unified • Confident • Intense',
+    tagline: 'Hype • Dominant • Confident • Victorious',
     image: 'https://images.squarespace-cdn.com/content/680842714352b025d2afe3ab/8a9d83fe-3613-4fcf-8dcc-61bf6a82ae14/Screenshot+2025-05-01+at+8.18.28%E2%80%AFPM.jpg?content-type=image%2Fjpeg',
-    href: 'southforsyth1.html', liveUrl: 'https://www.divinify.io/southforsyth1', video: '', action: 'watch',
+    href: 'southforsyth1.html', liveUrl: 'https://www.divinify.io/southforsyth1', action: 'watch',
+    videos: [
+      { url: 'https://player.vimeo.com/video/1203883564?autoplay=1', poster: 'https://vumbnail.com/1203883564.jpg', title: 'South Game (3.22.24)' },
+      { url: 'https://player.vimeo.com/video/1203883876?autoplay=1', poster: 'https://vumbnail.com/1203883876.jpg', title: 'Varsity Hype Video' }
+    ],
     client: 'South Forsyth Soccer (War Eagles) — a GHSA Class 7A program in Cumming, GA.',
     location: 'Cumming, Georgia',
     services: ['Video Production', 'Lighting', 'Team Coordination', 'Editing', 'Conceptualization'],
-    deliverables: ['Main hype film', 'Boys JV edit'],
+    deliverables: ['Pre-season hype film', 'Championship-run film', 'Boys JV edit'],
     timeline: null,
     overview: [
-      "South Forsyth Soccer is a state-championship program, and their Pre-Season Media Day video needed to feel like it. We built a jumbotron-ready hype piece designed to project pride, intimidation, and home-field edge.",
-      "Cinematic lighting, tight team coordination, and high-energy editing turned a media day into a statement — plus a second cut tailored for the boys' JV team, so the next group up gets the same big-stage treatment."
+      "South Forsyth Soccer is a state-championship program, and their content needed to feel like it. We built a jumbotron-ready Pre-Season Media Day hype piece designed to project pride, intimidation, and home-field edge — cinematic lighting, tight team coordination, and high-energy editing that turned a media day into a statement.",
+      "We came back to capture their run at a regional title through chaotic rain, raw effort, and real emotion — a cinematic story about grit and pride from start to finish. Each project also carried a short, sharp cut tailored for the boys' JV team, so the next group up gets the same big-stage treatment."
     ],
     testimonial: { quote: 'Carter and Merritt have been such a huge blessing. They created quality videos that rival professional teams.', author: 'South Forsyth Soccer' }
   },
@@ -238,23 +338,6 @@ window.PROJECTS = [
       "We handled it start to finish — creative planning, filming, and editing — capturing high-energy workouts and real community, plus a social-tailored cut for their Auburn, Alabama location."
     ],
     testimonial: null
-  },
-  {
-    slug: 'south-forsyth-2', page: 'southforsyth2', name: 'South Forsyth',
-    category: 'video', tag: 'Video Production',
-    tagline: 'Competitive • Hype • Dominant • Victorious',
-    image: 'https://images.squarespace-cdn.com/content/v1/680842714352b025d2afe3ab/f9e2aaf9-0ad3-4cc2-a122-1df53ca392f0/Screenshot+2025-05-02+at+11.23.45%E2%80%AFAM.png?format=1500w',
-    href: 'southforsyth2.html', liveUrl: 'https://www.divinify.io/southforsyth2', video: '', action: 'watch',
-    client: 'South Forsyth Soccer (War Eagles) — a GHSA Class 7A program in Cumming, GA.',
-    location: 'Cumming, Georgia',
-    services: ['Video Production', 'Lighting', 'Team Coordination', 'Editing', 'Conceptualization'],
-    deliverables: ['Championship-run film', 'Boys JV edit'],
-    timeline: null,
-    overview: [
-      "Some moments only happen once. We captured South Forsyth Soccer's run at a regional title through chaotic rain, raw effort, and real emotion — start to finish.",
-      "The result is a cinematic story about grit and pride: the team's relentless push toward victory, plus a short, sharp edit for the boys' JV side carrying the same intimidation factor."
-    ],
-    testimonial: { quote: 'Quality videos that showcase our players in ways that rival professional teams — professional, flexible, and enjoyable to work with.', author: 'South Forsyth Soccer' }
   },
   {
     slug: 'jah-and-nez', page: 'jahandnez', name: 'Jah & Nez',

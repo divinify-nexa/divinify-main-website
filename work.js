@@ -58,7 +58,9 @@
   // `thumbLogo` renders a centered, contained wordmark instead of a cover photo.
   function imageVisual(p, withPlay) {
     var logo = p.thumbLogo;
-    return '<div class="card-visual card-visual--photo' + (logo ? ' card-visual--logo' : '') + '">' +
+    var theme = p.thumbTheme ? ' card-visual--' + p.thumbTheme : '';
+    return '<div class="card-visual card-visual--photo' + (logo ? ' card-visual--logo' : '') + theme + '">' +
+      (logo ? '<span class="logo-glow" aria-hidden="true"></span>' : '') +
       '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" decoding="async">' +
       (logo ? '' : '<span class="visual-shade" aria-hidden="true"></span>') +
       (withPlay
@@ -67,14 +69,39 @@
     '</div>';
   }
 
+  // Real desktop screenshot wrapped in a browser-chrome frame, with an
+  // optional small mobile capture inset (software/web portfolio cards).
+  function screenshotVisual(p) {
+    var phone = p.screenshotMobile
+      ? '<span class="browser-phone" aria-hidden="true">' +
+          '<img src="' + p.screenshotMobile + '" alt="" loading="lazy" decoding="async">' +
+        '</span>'
+      : '';
+    return '<div class="card-visual card-visual--browser">' +
+        '<div class="browser-frame">' +
+          '<div class="browser-bar"><i></i><i></i><i></i><div class="browser-url"></div></div>' +
+          '<div class="browser-shot">' +
+            '<img src="' + p.screenshot + '" alt="' + p.name + '" loading="lazy" decoding="async">' +
+          '</div>' +
+        '</div>' +
+        phone +
+      '</div>';
+  }
+
   var VISUALS = { software: softwareVisual, ai: aiVisual, video: videoVisual };
 
   function cardHTML(p) {
-    var label = p.action === 'watch' ? 'Watch' : 'View Case Study';
+    var label = p.action === 'watch' ? 'Watch'
+      : p.action === 'web' ? 'View Project'
+      : p.action === 'live' ? 'Visit Live Site'
+      : 'View Case Study';
     var href = p.href || ('#' + p.slug); // detail pages aren't built yet
-    var visual = p.image
-      ? imageVisual(p, p.category === 'video')
-      : (VISUALS[p.category] || softwareVisual)(p);
+    var external = /^https?:\/\//.test(href);
+    var visual = p.screenshot
+      ? screenshotVisual(p)
+      : p.image
+        ? imageVisual(p, p.category === 'video')
+        : (VISUALS[p.category] || softwareVisual)(p);
 
     var body;
     if (p.category === 'video') {
@@ -96,8 +123,11 @@
         '</div>';
     }
 
-    return '<a class="work-card" data-category="' + p.category + '" id="' + p.slug + '" ' +
-      'href="' + href + '" aria-label="' + label + ': ' + p.name + '">' +
+    // `kind` powers the software-page filter: web builds vs. software products.
+    var kind = p.layout === 'web' ? 'website' : (p.category === 'software' ? 'software' : p.category);
+    return '<a class="work-card" data-category="' + p.category + '" data-kind="' + kind + '" id="' + p.slug + '" ' +
+      'href="' + href + '"' + (external ? ' target="_blank" rel="noopener"' : '') +
+      ' aria-label="' + label + ': ' + p.name + '">' +
       visual + body +
     '</a>';
   }
@@ -241,8 +271,16 @@
     var grid = document.getElementById('work-grid');
     if (!grid) return;
     var items = PROJECTS.filter(function (p) { return p.category === category; });
+    if (category === 'software') {
+      // Website builds first; software products (e.g. Zerva) sit last for now.
+      // Stable sort preserves each group's data order.
+      items = items.slice().sort(function (a, b) {
+        return (a.layout === 'web' ? 0 : 1) - (b.layout === 'web' ? 0 : 1);
+      });
+    }
     grid.innerHTML = items.map(cardHTML).join('');
     initOrbs();
+    initFilter(grid);
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.work-card'));
 
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -257,6 +295,30 @@
       }
     }, { threshold: 0.05 });
     observer.observe(grid);
+  }
+
+  /* ── CATEGORY FILTER (software page) ──
+     Segmented control: All / Website Development / Software. Filters cards by
+     their data-kind. No-op on pages without a #work-filter element. */
+  function initFilter(grid) {
+    var bar = document.getElementById('work-filter');
+    if (!bar || bar._wired) return;
+    bar._wired = true;
+    var btns = Array.prototype.slice.call(bar.querySelectorAll('.work-filter-btn'));
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var filter = btn.getAttribute('data-filter');
+        btns.forEach(function (b) {
+          var on = b === btn;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        Array.prototype.forEach.call(grid.querySelectorAll('.work-card'), function (card) {
+          var show = filter === 'all' || card.getAttribute('data-kind') === filter;
+          card.classList.toggle('is-filtered-out', !show);
+        });
+      });
+    });
   }
 
   /* ── SHARED NAV BEHAVIOR (inherited from homepage) ── */

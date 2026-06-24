@@ -84,6 +84,12 @@
   padding: 7px 12px; border-radius: 7px; pointer-events: none;
 }
 .pd-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+.pd-video-cap {
+  margin-top: 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim, rgba(238,238,240,0.6));
+}
 
 /* Overview — minimal, centered */
 .pd-overview { max-width: 660px; margin: 0 auto; padding: 84px 0 0; text-align: center; }
@@ -122,6 +128,48 @@
 .pd-checks svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; color: var(--accent); }
 
 .pd-foot-space { height: 110px; }
+
+/* ───────────────────────────────────────────────
+   Website overview layout (software/web portfolio)
+─────────────────────────────────────────────── */
+.pd-web-shot { margin-top: 56px; }
+.pd-browser {
+  border: 1px solid var(--border-mid);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-lift);
+  box-shadow: 0 40px 90px rgba(0,0,0,0.5);
+}
+.pd-browser-bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 12px 16px;
+  background: var(--bg-lift2);
+  border-bottom: 1px solid var(--border);
+}
+.pd-browser-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--border-hi); display: block; }
+.pd-browser-url {
+  flex: 1; height: 20px; margin-left: 12px; max-width: 62%;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+}
+.pd-browser-shot { background: var(--bg); font-size: 0; }
+.pd-browser-shot img { width: 100%; height: auto; display: block; }
+
+.pd-web-mobile { padding-top: 88px; text-align: center; }
+.pd-web-mobile .section-tag { margin-bottom: 30px; }
+.pd-phones { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; }
+.pd-phone {
+  width: 236px; max-width: 68vw;
+  background: #0c0d0d;
+  border: 6px solid #1b1c1c;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+  transition: transform 0.35s ease;
+}
+.pd-phone img { width: 100%; height: auto; display: block; }
+.pd-phone:hover { transform: translateY(-6px); }
+@media (prefers-reduced-motion: reduce) { .pd-phone:hover { transform: none; } }
 
 /* ───────────────────────────────────────────────
    Walkthrough layout (software / web case studies)
@@ -221,8 +269,12 @@
   border-radius: 7px; padding: 6px 12px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.pd-browser-screen { aspect-ratio: 16 / 10; background: #0b0c0c; }
-.pd-browser-screen img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pd-browser-screen { position: relative; aspect-ratio: 16 / 10; background: #0b0c0c; }
+.pd-browser-screen img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+/* Real screenshot sits over the schematic fallback */
+.pd-browser-screen .pd-shot-img { position: absolute; inset: 0; z-index: 2; background: #0b0c0c; }
+/* Modals/non-16:10 shots show fully, centered, no crop */
+.pd-browser-screen .pd-shot-img--contain { object-fit: contain; }
 .pd-schematic { width: 100%; height: 100%; display: block; }
 
 /* Also-built-in grid */

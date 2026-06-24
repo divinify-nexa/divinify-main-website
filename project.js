@@ -94,18 +94,33 @@
   /* ── Case-study body ── */
   var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
-  function videoHTML(p) {
+  // One poster-to-player card. `vid` is either a string embed URL or
+  // { url, poster, title } — title shows as a caption, poster overrides the image.
+  function videoCard(p, vid) {
+    var embed = typeof vid === 'string' ? vid : (vid && vid.url) || '';
+    var title = (vid && typeof vid === 'object' && vid.title) || '';
+    var poster = (vid && typeof vid === 'object' && vid.poster) || p.image;
+    var alt = esc(p.name) + (title ? ' — ' + esc(title) : '');
     var inner =
-      '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" decoding="async">' +
+      '<img src="' + esc(poster) + '" alt="' + alt + '" decoding="async">' +
       '<span class="shade" aria-hidden="true"></span>' +
       '<span class="play-btn">' + PLAY + '</span>' +
       '<span class="note">▶ Watch the film</span>';
-    if (p.video) {
+    var card = embed
       // Embed-ready: clicking swaps the poster for the player.
-      return '<div class="pd-video" role="button" tabindex="0" data-embed="' + esc(p.video) + '" aria-label="Play ' + esc(p.name) + '">' + inner + '</div>';
-    }
-    // No embed yet → open the live film in a new tab.
-    return '<a class="pd-video" href="' + esc(p.liveUrl || '#') + '" target="_blank" rel="noopener" aria-label="Watch ' + esc(p.name) + '">' + inner + '</a>';
+      ? '<div class="pd-video" role="button" tabindex="0" data-embed="' + esc(embed) + '" aria-label="Play ' + alt + '">' + inner + '</div>'
+      // No embed yet → open the live film in a new tab.
+      : '<a class="pd-video" href="' + esc(p.liveUrl || '#') + '" target="_blank" rel="noopener" aria-label="Watch ' + esc(p.name) + '">' + inner + '</a>';
+    return card + (title ? '<div class="pd-video-cap">' + esc(title) + '</div>' : '');
+  }
+
+  // Every film for a project — a `videos` array yields one card each,
+  // otherwise the single `video` (or a link-out poster when none is set).
+  function videosHTML(p) {
+    var list = (p.videos && p.videos.length) ? p.videos : [p.video || ''];
+    return list.map(function (v) {
+      return '<div class="pd-wrap pd-video-wrap reveal">' + videoCard(p, v) + '</div>';
+    }).join('');
   }
 
   function creditCol(label, valueHTML) {
@@ -155,7 +170,7 @@
             '</div>' +
           '</div>' +
         '</section>' +
-        '<div class="pd-wrap pd-video-wrap reveal">' + videoHTML(p) + '</div>' +
+        videosHTML(p) +
         '<section class="pd-wrap pd-overview reveal">' +
           '<span class="section-tag">Overview</span>' + overview +
         '</section>' +
@@ -280,9 +295,14 @@
   };
 
   function browserHTML(host, feature) {
+    // Render the SVG schematic as a fallback layer; when a real screenshot is
+    // provided it sits on top, and if the file is missing it removes itself
+    // (onerror) to reveal the schematic — so no broken-image icons ever show.
+    var fallback = (SHOTS[feature.shot] || SHOTS.dashboard)();
+    var fitClass = feature.fit === 'contain' ? ' pd-shot-img--contain' : '';
     var screen = feature.image
-      ? '<img src="' + esc(feature.image) + '" alt="' + esc(feature.title) + '" loading="lazy" decoding="async">'
-      : (SHOTS[feature.shot] || SHOTS.dashboard)();
+      ? '<img class="pd-shot-img' + fitClass + '" src="' + esc(feature.image) + '" alt="' + esc(feature.title) + '" loading="lazy" decoding="async" onerror="this.remove()">' + fallback
+      : fallback;
     return '<div class="pd-browser">' +
       '<div class="pd-browser-bar">' +
         '<span class="pd-dot"></span><span class="pd-dot"></span><span class="pd-dot"></span>' +
@@ -411,6 +431,80 @@
       '</div></div></section>' + ctaHTML() + '</main>';
   }
 
+  /* ── Website overview page (software/web portfolio) ──
+     A light case study: desktop browser-frame screenshot, a short overview,
+     a who / what / why credits row, and mobile screenshots. */
+  function webHTML(p) {
+    var overview = (p.overview || []).map(function (para) {
+      return '<p>' + esc(para) + '</p>';
+    }).join('');
+
+    var client = p.client ? '<div class="pd-cred-val">' + esc(p.client) + '</div>' : '';
+    var benefit = p.benefit ? '<div class="pd-cred-val">' + esc(p.benefit) + '</div>' : '';
+    var services = (p.services && p.services.length)
+      ? '<div class="pd-tags">' + p.services.map(function (s) {
+          return '<span class="pd-tag">' + esc(s) + '</span>';
+        }).join('') + '</div>'
+      : '';
+
+    var credits =
+      creditCol('Who it was for', client) +
+      creditCol('What we built', services) +
+      creditCol('Why it benefited them', benefit);
+
+    var live = p.liveUrl
+      ? '<a class="btn-primary pd-live" href="' + esc(p.liveUrl) + '" target="_blank" rel="noopener">Visit live site ' + ARROW + '</a>'
+      : '';
+
+    var browser =
+      '<div class="pd-wrap pd-web-shot reveal">' +
+        '<div class="pd-browser">' +
+          '<div class="pd-browser-bar"><i></i><i></i><i></i><span class="pd-browser-url"></span></div>' +
+          '<div class="pd-browser-shot"><img src="' + esc(p.screenshot) + '" alt="' + esc(p.name) + ' — desktop" loading="lazy" decoding="async"></div>' +
+        '</div>' +
+      '</div>';
+
+    var shots = p.mobileShots || (p.screenshotMobile ? [p.screenshotMobile] : []);
+    var mobile = shots.length
+      ? '<section class="pd-wrap pd-web-mobile reveal">' +
+          '<span class="section-tag">On mobile</span>' +
+          '<div class="pd-phones' + (shots.length === 1 ? ' pd-phones--one' : '') + '">' +
+            shots.map(function (src) {
+              return '<div class="pd-phone"><img src="' + esc(src) + '" alt="' + esc(p.name) + ' — mobile" loading="lazy" decoding="async"></div>';
+            }).join('') +
+          '</div>' +
+        '</section>'
+      : '';
+
+    return '' +
+      '<main>' +
+        '<div class="pd-wrap pd-top">' +
+          '<a class="pd-back" href="work-software.html">' + ARROW_LEFT + ' Software &amp; Web</a>' +
+        '</div>' +
+        '<section class="pd-hero">' +
+          '<div class="pd-hero-glow" aria-hidden="true"></div>' +
+          '<div class="pd-wrap">' +
+            '<div class="pd-hero-inner reveal">' +
+              '<span class="section-tag">' + esc(p.tag) + '</span>' +
+              '<h1 class="pd-title">' + esc(p.name) + '</h1>' +
+              '<p class="pd-lede">' + esc(p.summary || p.description || '') + '</p>' +
+              live +
+            '</div>' +
+          '</div>' +
+        '</section>' +
+        browser +
+        mobile +
+        '<section class="pd-wrap pd-overview reveal">' +
+          '<span class="section-tag">Overview</span>' + overview +
+        '</section>' +
+        '<section class="pd-wrap reveal">' +
+          '<div class="pd-credits">' + credits + '</div>' +
+        '</section>' +
+        '<div class="pd-foot-space"></div>' +
+        ctaHTML() +
+      '</main>';
+  }
+
   /* ── Shared nav behavior (mirrors work.js) ── */
   function initNav(root) {
     var navEl = document.getElementById('mainNav');
@@ -471,15 +565,16 @@
 
   // Click-to-play for embed-ready projects (no-op until a `video` URL is set).
   function initVideoEmbed() {
-    var el = document.querySelector('.pd-video[data-embed]');
-    if (!el) return;
-    var play = function () {
-      var src = el.getAttribute('data-embed');
-      el.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
-    };
-    el.addEventListener('click', play);
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); }
+    var els = [].slice.call(document.querySelectorAll('.pd-video[data-embed]'));
+    els.forEach(function (el) {
+      var play = function () {
+        var src = el.getAttribute('data-embed');
+        el.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+      };
+      el.addEventListener('click', play);
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); }
+      });
     });
   }
 
@@ -513,7 +608,9 @@
     document.body.insertAdjacentHTML('afterbegin', navHTML(p && p.category));
     var main = document.createElement('div');
     main.innerHTML = p
-      ? (p.layout === 'walkthrough' ? walkthroughHTML(p) : bodyHTML(p))
+      ? (p.layout === 'walkthrough' ? walkthroughHTML(p)
+         : p.layout === 'web' ? webHTML(p)
+         : bodyHTML(p))
       : notFoundHTML(slug);
     while (main.firstChild) document.body.appendChild(main.firstChild);
     document.body.insertAdjacentHTML('beforeend', footerHTML());
